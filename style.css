@@ -1,40 +1,51 @@
 aside{
-	width: 100px;
+	width: 120px;
 	border-style: solid;
 	border-width: 2px;
 	position: fixed;
+	padding-right: 100px;
 }
 
 body{
 	margin: 50px 0px;
 	padding: 0px;
+	background: #D8D9ED;
 }
 
 button {
-	width: 100px;
+	width: 150px;
 	padding-top: 10px;
 }
 
 canvas{
 	border-style: solid;
 	border-width: 2px; 
-	margin-left: 150px;
+	margin-left: 350px;
 	background: #C4CBF5;
 }
 
 header{
 	padding-bottom: 20px;
 	text-align: center;
-	width: 700px;
+	width: 1200px;
 	border-style: solid; 
 	border-width: 2px;
+}
+
+.colorButton {
+	width: 50px;
+}
+
+#colorPallet {
+	border-style:solid; 
+	width: 100px;
 }
 
 #menuTitle {
 }
 
 #content{
-	width: 700px;
+	width: 1200px;
 	margin: 0px auto;
 	padding: 15px;
 	border: 2px solid;
