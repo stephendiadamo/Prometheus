@@ -1,0 +1,39 @@
+canvas{
+	border-style: solid;
+	border-width: 2px; 
+	margin-left: 150px;
+	background: #C4CBF5;
+	clear: both;
+}
+
+aside{
+	width: 100px;
+	border-style: solid;
+	border-width: 2px;
+	position: fixed;
+}
+
+button {
+	width: 100px;
+	padding-top: 10px;
+}
+
+header{
+	padding-bottom: 20px;
+	text-align: center;
+	width: 700px;
+	border-style: solid; 
+	border-width: 2px;
+}
+
+body{
+	margin: 50px 0px;
+	padding: 0px;
+}
+
+#content{
+	width: 700px;
+	margin: 0px auto;
+	padding: 15px;
+	border: 2px solid;
+}
