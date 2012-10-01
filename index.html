@@ -15,11 +15,12 @@
 		<div id="content">
 			<header> CSC309 Assignment </header>
 			<aside>
-				<span id="menuTitle"> Options <span>
+				<span id="menuTitle"> Options </span>
+				<p id="coords" > mouse: (0, 0)</p>
 				<button id="clear" onclick="clearCanvas()"> Clear Canvas </button>
-				<button id="straightLine" onclick="straightLineSelected()"> Straight Line </button>
-				<button id="rectangle" onclick="rectangleSelected()"> Rectangle </button>
-				<button id="circle" onclick="circleSelected()"> Circle </button>
+				<button id="straightLine" onclick="straightLineClicked()"> Straight Line </button>
+				<button id="rectangle" onclick="rectangleClicked()"> Rectangle </button>
+				<button id="circle" onclick="circleClicked()"> Circle </button>
 				<button id="circle" onclick="saveImage()"> Save Drawing </button>
 
 				<table id="colorPallet">
@@ -49,9 +50,7 @@
 
 			</aside>
 			<div>
-				<canvas id="drawingCanvas" width="750" height="450"></canvas>
-				
-
+				<canvas onclick="drawShape(event)" id="drawingCanvas" width="750" height="450"></canvas>
 			</div>
 		</div>
 	</body>
