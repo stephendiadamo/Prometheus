@@ -4,7 +4,7 @@ var CIRCLE = "circle";
 var LINE = "line";
 
 //Globals
-var rectangleSelected = false;
+var rectangleSelected = true;
 var circleSelected = false;
 var straightLineSelected = false;
 var shapes = [];
@@ -13,6 +13,16 @@ var currentOutlineColor = "#000";
 var currentfillColor = "#000"
 
 //Objects  
+
+//Can use a Shape parent class possibly
+// function Shape (x, y, outlineColor, outlineThickness, fillColor) {
+// 	this.x = x;
+// 	this.y = y;
+// 	this.outlineColor = outlineColor;
+// 	this.outlineThickness = outlineThickness;
+// 	this.fillColor = fillColor;
+// }
+
 function Circle()
 {
 	this.x = 0;
@@ -44,6 +54,7 @@ function Rectangle()
 	this.outlineThickness = 1;
 }
 
+//Can be built into constructor, but must be added to the shapes array.
 function addCircle(x, y, radius, fillColor, outlineColor, outlineThickness)
 {
 	var circle = new Circle;

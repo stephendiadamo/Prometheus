@@ -23,7 +23,7 @@ canvas{
 	border-style: solid;
 	border-width: 2px; 
 	margin-left: 350px;
-	background: #C4CBF5;
+	background: #fff;
 }
 
 header{
@@ -35,7 +35,8 @@ header{
 }
 
 .colorButton {
-	width: 50px;
+	width: 30px;
+	height: 30px;
 }
 
 #colorPallet {
