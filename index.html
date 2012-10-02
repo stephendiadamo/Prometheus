@@ -17,22 +17,26 @@
 			<aside>
 				<span id="menuTitle"> Options </span>
 				<p id="coords" > mouse: (0, 0)</p>
+				<p id="curColor">Color: #000</p>
+				<span id="curShape">Shape : NONE</span>
 				<button id="clear" onclick="clearCanvas()"> Clear Canvas </button>
 				<button id="straightLine" onclick="straightLineClicked()"> Straight Line </button>
 				<button id="rectangle" onclick="rectangleClicked()"> Rectangle </button>
 				<button id="circle" onclick="circleClicked()"> Circle </button>
-				<button id="circle" onclick="saveImage()"> Save Drawing </button>
+				<button id="save" onclick="saveImage()"> Save Drawing </button>
+				<button id="undo" onClick="undoLast()">Undo</button>
+				<button onClick="alert(shapes)">Shapes</button>
 
 				<table id="colorPallet">
 					<tr>
 						<td>
-							<button id="red" class="colorButton">RED</button>
+							<button class="colorButton" onclick="setColor('#f00')">RED</button>
 						</td>
 						<td>
-							<button class="colorButton">BLUE</button>
+							<button class="colorButton" onclick="setColor('#00f')">BLUE</button>
 						</td>
 						<td>
-							<button class="colorButton">GREEN</button>
+							<button class="colorButton" onclick="setColor('#0f0')">GREEN</button>
 						</td>
 					</tr>
 					<tr>
@@ -45,9 +49,7 @@
 						<td></td>
 						<td></td>
 					</tr>
-
 				</table>
-
 			</aside>
 			<div>
 				<canvas onclick="drawShape(event)" id="drawingCanvas" width="750" height="450"></canvas>

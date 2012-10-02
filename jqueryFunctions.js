@@ -1,7 +1,7 @@
 $(document).ready(
 	function () {
     	$("#red").click( function() {
-    		$(this).slideUp();
+    		//$(this).slideUp();
     	});
 	}
 );
