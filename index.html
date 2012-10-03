@@ -21,14 +21,14 @@
 			<p id="coords">mouse: (0, 0)</p>
 			<p id="curColor">Color: #000</p>
 			<span id="curShape">Shape : NONE</span>
-			<button id="clear" onclick="clearCanvas()">Clear Canvas</button>
-			<button id="straightLine" onclick="straightLineClicked()">
+			<button id="clear" onclick="commandCanvas()">Clear Canvas</button>
+			<button id="straightLine" onclick="setSelected(this.id)">
 				Straight Line</button>
-			<button id="rectangle" onclick="rectangleClicked()">
+			<button id="rectangle" onclick="setSelected(this.id)">
 				Rectangle</button>
-			<button id="circle" onclick="circleClicked()">Circle</button>
-			<button id="save" onclick="saveImage()">Save Drawing</button>
-			<button id="undo" onClick="undoLast()">Undo</button>
+			<button id="circle" onclick="setSelected(this.id)">Circle</button>
+			<button id="save" onclick="commandCanvas()">Save Drawing</button>
+			<button id="undo" onClick="commandCanvas()">Undo</button>
 			<button onClick="alert(shapes)">Shapes</button>
 
 			<table id="colorPallet">
@@ -76,7 +76,7 @@
 			</table>
 		</aside>
 		<div>
-			<canvas onclick="drawShape(event)" id="drawingCanvas" width="750"
+			<canvas onclick="addShape(event)" id="drawingCanvas" width="750"
 				height="450"></canvas>
 		</div>
 	</div>
