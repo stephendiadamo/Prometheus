@@ -1,4 +1,4 @@
-aside{
+aside {
 	width: 120px;
 	border-style: solid;
 	border-width: 2px;
@@ -6,7 +6,7 @@ aside{
 	padding-right: 100px;
 }
 
-body{
+body {
 	margin: 50px 0px;
 	padding: 0px;
 	background: #D8D9ED;
@@ -15,22 +15,22 @@ body{
 button {
 	width: 150px;
 	margin-top: 10px;
-	padding:5px;
+	padding: 5px;
 	text-align: center;
 }
 
-canvas{
+canvas {
 	border-style: solid;
-	border-width: 2px; 
+	border-width: 2px;
 	margin-left: 350px;
 	background: #fff;
 }
 
-header{
+header {
 	padding-bottom: 20px;
 	text-align: center;
 	width: 1200px;
-	border-style: solid; 
+	border-style: solid;
 	border-width: 2px;
 }
 
@@ -40,14 +40,15 @@ header{
 }
 
 #colorPallet {
-	border-style:solid; 
+	border-style: solid;
 	width: 100px;
 }
 
 #menuTitle {
+	
 }
 
-#content{
+#content {
 	width: 1200px;
 	margin: 0px auto;
 	padding: 15px;

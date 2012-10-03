@@ -1,71 +1,84 @@
 <!DOCTYPE html>
-<html> 
-	<head>
-		<title> CSC309 Assignment One - HTML5 Paint </title>
-		<script src="https://www.google.com/jsapi"></script>
-		<script>google.load('jquery', '1.3.2');</script>
-		<style type="text/css"></style>
-		<script type="text/javascript" src="jqueryFunctions.js"></script>
-		<script type="text/javascript" src="functions.js"></script>
-		<link href="style.css" rel="stylesheet"/>
-		<meta charset="utf-8"/>
-	</head>
+<html>
+<head>
+<title>CSC309 Assignment One - HTML5 Paint</title>
+<script src="https://www.google.com/jsapi"></script>
+<script>
+    google.load('jquery', '1.3.2');
+</script>
+<style type="text/css"></style>
+<script type="text/javascript" src="jqueryFunctions.js"></script>
+<script type="text/javascript" src="functions.js"></script>
+<link href="style.css" rel="stylesheet" />
+<meta charset="utf-8" />
+</head>
 
-	<body>
-		<div id="content">
-			<header> CSC309 Assignment </header>
-			<aside>
-				<span id="menuTitle"> Options </span>
-				<p id="coords" > mouse: (0, 0)</p>
-				<p id="curColor">Color: #000</p>
-				<span id="curShape">Shape : NONE</span>
-				<button id="clear" onclick="clearCanvas()"> Clear Canvas </button>
-				<button id="straightLine" onclick="straightLineClicked()"> Straight Line </button>
-				<button id="rectangle" onclick="rectangleClicked()"> Rectangle </button>
-				<button id="circle" onclick="circleClicked()"> Circle </button>
-				<button id="save" onclick="saveImage()"> Save Drawing </button>
-				<button id="undo" onClick="undoLast()">Undo</button>
-				<button onClick="alert(shapes)">Shapes</button>
+<body>
+	<div id="content">
+		<header> CSC309 Assignment </header>
+		<aside>
+			<span id="menuTitle"> Options </span>
+			<p id="coords">mouse: (0, 0)</p>
+			<p id="curColor">Color: #000</p>
+			<span id="curShape">Shape : NONE</span>
+			<button id="clear" onclick="clearCanvas()">Clear Canvas</button>
+			<button id="straightLine" onclick="straightLineClicked()">
+				Straight Line</button>
+			<button id="rectangle" onclick="rectangleClicked()">
+				Rectangle</button>
+			<button id="circle" onclick="circleClicked()">Circle</button>
+			<button id="save" onclick="saveImage()">Save Drawing</button>
+			<button id="undo" onClick="undoLast()">Undo</button>
+			<button onClick="alert(shapes)">Shapes</button>
 
-				<table id="colorPallet">
-					<tr>
-						<td>
-							<button style="background:#f00;" class="colorButton" onclick="setColor('#f00')"></button>
-						</td>
-						<td>
-							<button style="background:#00f;" class="colorButton" onclick="setColor('#00f')"></button>
-						</td>
-						<td>
-							<button style="background:#0f0;" class="colorButton" onclick="setColor('#0f0')"></button>
-						</td>
-						<td>
-							<button style="background:#000;" class="colorButton" onclick="setColor('#000')"></button>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<button style="background:#ff0;" class="colorButton" onclick="setColor('#ff0')"></button>
-						</td>
-						<td>
-							<button style="background:#f0f;" class="colorButton" onclick="setColor('#f0f')"></button>
-						</td>
-						<td>
-							<button style="background:#fff;" class="colorButton" onclick="setColor('#fff')"></button>
-						</td>
-						<td>
-							<button style="background:#0ff;" class="colorButton" onclick="setColor('#0ff')"></button>
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-					</tr>
-				</table>
-			</aside>
-			<div>
-				<canvas onclick="drawShape(event)" id="drawingCanvas" width="750" height="450"></canvas>
-			</div>
+			<table id="colorPallet">
+				<tr>
+					<td>
+						<button style="background: #f00;" class="colorButton"
+							onclick="setColor('#f00')"></button>
+					</td>
+					<td>
+						<button style="background: #00f;" class="colorButton"
+							onclick="setColor('#00f')"></button>
+					</td>
+					<td>
+						<button style="background: #0f0;" class="colorButton"
+							onclick="setColor('#0f0')"></button>
+					</td>
+					<td>
+						<button style="background: #000;" class="colorButton"
+							onclick="setColor('#000')"></button>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button style="background: #ff0;" class="colorButton"
+							onclick="setColor('#ff0')"></button>
+					</td>
+					<td>
+						<button style="background: #f0f;" class="colorButton"
+							onclick="setColor('#f0f')"></button>
+					</td>
+					<td>
+						<button style="background: #fff;" class="colorButton"
+							onclick="setColor('#fff')"></button>
+					</td>
+					<td>
+						<button style="background: #0ff;" class="colorButton"
+							onclick="setColor('#0ff')"></button>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</aside>
+		<div>
+			<canvas onclick="drawShape(event)" id="drawingCanvas" width="750"
+				height="450"></canvas>
 		</div>
-	</body>
+	</div>
+</body>
 </html>

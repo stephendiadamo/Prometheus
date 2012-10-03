@@ -1,7 +1,5 @@
-$(document).ready(
-	function () {
-    	$("#red").click( function() {
-    		//$(this).slideUp();
-    	});
-	}
-);
+$(document).ready(function() {
+    $("#red").click(function() {
+        //$(this).slideUp();
+    });
+});
