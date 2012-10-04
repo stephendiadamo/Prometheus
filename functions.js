@@ -9,11 +9,11 @@ var circleSelected = false;
 var straightLineSelected = false;
 var shapes = [];
 var currentSelectedShape;
-var currentOutlineColor = "#000";
-var currentfillColor = "#000"
+var currentSelectedOutlineColor = "#000";
+var currentSelectedFillColor = "#000";
 
 var currentSelectedShape = null;
-var currentDraw = null;
+var currentsetDraw = null;
 var shapesTable = [];
 
 // Do not OVERRIDE these variables!
@@ -26,27 +26,47 @@ $(document).ready(function() {
     // Set up variables neccessary for drawing
     canvas = document.getElementById("drawingCanvas");
     context = canvas.getContext('2d');
+    $('#drawingCanvas').mousedown( function(e) {
+        addShape(e);
+        console.log("mousedown");
+      });
+    
+    $('#drawingCanvas').mouseup( function(e) {
+        finishShape(e);
+        console.log("mouseup");
+      });
+    
+    // Need to add mouse movement event
+    $("#drawingCanvas").mousemove( function (e){
+        modifyShape(e);
+    });
 });
 
     /*
      * Points define the type of shape
      */
-function DefaultProperty(){
-    var x, y;
-    
-    this.points = []; // Can be clicked.
-    this.arcs = [];
-    
-    this.fillColor = "#000"
-    this.lineColor = "#000";
+function BaseShape(identifier){
+    this.id = identifier; // Identifies current shape in array
+    this.x = 0;
+    this.y = 0;
+    this.fillColor = "#001";
+    this.lineColor = "#001";
     this.lineThickness = 1;
     this.scaleX = 1;
     this.scaleY = 1;
     this.Rotate = 0.0;
+}
+
+BaseShape.prototype.setAttributes = function(){
+    context.translate(this.x, this.y);
+    context.scale(this.scaleX,this.scaleY);
     
-    this.translate(newX, newY){
-        x = newX;
-        y = newY;
+    if (this.lineColor != null){
+        context.strokeStyle = this.lineColor;
+    }
+    
+    if (this.fillStyle != null){
+        context.fillStyle = this.fillStyle;
     }
 }
 
@@ -54,10 +74,13 @@ function DefaultProperty(){
  * Assume all shapes move Clockwise
  * Shapes are created by click and dragging.
  */
-function Line(pointStart){
-    DefaultProperty.call(this);
+Line.prototype = new BaseShape();
+//Line.prototype.constructor = Line;
+function Line(pointStart, identifier){
+    BaseShape.call(this);
     this.x = pointStart[0];
     this.y = pointStart[1];
+    this.id = identifier;
     
     var x_end = 0;
     var y_end = 0;
@@ -67,82 +90,77 @@ function Line(pointStart){
         y_end = secondPoint[1]
     }
     this.draw = function(){
+        BaseShape.parent.prototype.setAttributes(this);
+        
         context.beginPath();
-        context.moveTo(this.x, this.y);
-        context.scale(this.scaleX,this.scaleY);
-        
-        context.strokeStyle = currentOutlineColor;
-        context.fillStyle = outlineColor;
-        
         context.lineTo(x_end, y_end);
         context.closePath();
+        
+        context.stroke();
     }
 }
 
+Rectangle.prototype = new BaseShape();
+//Rectangle.prototype.constructor = Rectangle;
 function Rectangle(pointStart) {
-    DefaultProperty.call(this);
-    DefaultProperty.x = pointStart[0];
-    DefaultProperty.y = pointStart[1];
+    BaseShape.call(this);
+    this.x = pointStart[0];
+    this.y = pointStart[1];
 
-    DefaultPropery.fillColor = "#000"
-    DefaultPropery.outlineColor = "#000";
-    DefaultPropery.outlineThickness = 1;
+    this.fillColor = "#000";
+    this.outlineColor = "#000";
+    this.outlineThickness = 1;
     
-    var length = 0;
-    var height = 0;
+    this.length = 0;
+    this.height = 0;
     
     this.setDraw = function (secondPoint){
-        length = x - secondPoint[0];
-        height = y - secondPoint[1];
+        this.length = secondPoint[0] - this.x;
+        this.height = secondPoint[1] - this.y;
     }
-    
+
     // Defines the unique Shape
     this.draw = function(){
-        context.moveTo(this.x, this.y);
-        context.scale(this.scaleX,this.scaleY);
+        BaseShape.prototype.setAttributes.call(this);
+       
+        context.rect(0,0, this.length, this.height); 
+        context.stroke();
         
-        context.strokeStyle = currentOutlineColor;
-        context.fillStyle = outlineColor;
-        
-        context.rect(0,0,length,height);
-        
-        //DefaultProperty.points[1] = [DefaultProperty.x + length, DefaultProperty.y];
-        //DefaultProperty.points[2] = [DefaultProperty.x + length, DefaultProperty.y + height];
-        //DefaultProperty.points[3] = [DefaultProperty.x, DefaultProperty.y + height];
+        context.setTransform(1, 0, 0, 1, 0, 0);
     }
 }
 
+Circle.prototype = new BaseShape();
+
+//Circle.prototype.constructor = Circle;
 function Circle(pointStart){
-    DefaultProperty.call(this);
-    DefaultProperty.points = null;
-    var radius = pointStart - pointEnd; // Radius
+    BaseShape.call(this);
+   /* var radius = pointStart - pointEnd; 
     
     this.setDraw = function(secondPoint){
         radius = pointStart - pointEnd;
     }
     this.draw = function(){
-        context.moveTo(this.x, this.y);
-        context.scale(this.scaleX,this.scaleY);
-        
-        context.strokeStyle = currentOutlineColor;
-        context.fillStyle = outlineColor;
-        
+        BaseShape.parent.prototype.setAttributes(this);
+
         context.arc(0, 0, radius, 0, 2 * Math.PI);
-    }
+        context.stroke();
+    }*/
 }
 
-function setSelected(event){
-    document.getElementById("curShape").innerHTML = "Shape : " + shape;
-    currentSelectedShape = shape;
+function setSelected(shapeID){
+    document.getElementById("curShape").innerHTML = "Shape : " + shapeID;
+    currentSelectedShape = shapeID;
 }
 
 /*
  * Note: this should be binded to elements with Jquery, for now just use html
  */
-function commandCanvas(var command) {
+function commandCanvas(command) {
     switch (command){
     case "clear":
         context.clearRect(0, 0, canvas.width, canvas.height);
+        shapesTable = null;
         break;
     case "save":
         var dataURL = canvas.toDataURL();
@@ -172,14 +190,18 @@ function updateMouseCoordinates(event) {
 }
 
 function finishShape(event){
-    
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    currentsetDraw = null;
 }
 
 // Fired off until click RELEASE event
 function modifyShape(event){
-    var coordinates = updateMouseCoordinates(event);
-    
-    renderShapes(drawShape);
+    if (currentsetDraw != null){
+        var coordinates = updateMouseCoordinates(event);
+        shapesTable[currentsetDraw].setDraw(coordinates);
+        renderShapes();
+    }
 }
 
 // Fired off on first click HOLD event
@@ -201,18 +223,27 @@ function addShape(event){
     }
     if (drawShape!= null){
         shapesTable.push(drawShape);
-        currentDraw = drawShape;
+        currentsetDraw = shapesTable.length-1;
     }
-    renderShapes(drawShape);
+    renderShapes();
 }
 
-function renderShapes(shape){
+function renderShapes(){
+    // First we need reset the page
+    // Will always clear the right space
+    context.translate(0, 0);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
     for (var i = 0; i < shapesTable.length; i ++){
-        shapesTable[i].draw();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        shapesTable[0].draw();
+        break;
     }
+
 }
 
 function setColor(color) {
-    currentOutlineColor = color;
+    currentSelectedOutlineColor = color;
     document.getElementById("curColor").innerHTML = "Color: " + color;
 }
