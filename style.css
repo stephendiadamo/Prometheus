@@ -12,8 +12,13 @@ body {
 	background: #D8D9ED;
 }
 
+#straightLinePallet, #rectanglePallet, #circlePallet {
+	display: none;
+}
+
 button {
-	width: 150px;
+	width: 120px;
+	height: 30px;
 	margin-top: 10px;
 	padding: 5px;
 	text-align: center;
@@ -37,11 +42,14 @@ header {
 .colorButton {
 	width: 30px;
 	height: 30px;
+	margin-bottom: -15px;
 }
 
 #colorPallet {
 	border-style: solid;
-	width: 100px;
+	width: 50%;
+	margin: auto;
+	display: none;
 }
 
 #menuTitle {

@@ -1,35 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>CSC309 Assignment One - HTML5 Paint</title>
-<script src="https://www.google.com/jsapi"></script>
-<script>
-    google.load('jquery', '1.3.2');
-</script>
-<style type="text/css"></style>
-<script type="text/javascript" src="jqueryFunctions.js"></script>
-<script type="text/javascript" src="functions.js"></script>
-<link href="style.css" rel="stylesheet" />
-<meta charset="utf-8" />
+	<title>CSC309 Assignment One - HTML5 Paint</title>
+	<script src="https://www.google.com/jsapi"></script>
+	<script>
+    	google.load('jquery', '1.3.2');
+	</script>
+	<style type="text/css"></style>
+	<script type="text/javascript" src="jqueryFunctions.js"></script>
+	<script type="text/javascript" src="functions.js"></script>
+	<link href="style.css" rel="stylesheet" />
+	<meta charset="utf-8" />
 </head>
 
 <body>
 	<div id="content">
 		<header> CSC309 Assignment </header>
 		<aside>
-			<span id="menuTitle"> Options </span>
+
 			<p id="coords">mouse: (0, 0)</p>
 			<p id="curColor">Color: #f00</p>
 			<span id="curShape">Shape : null</span>
-			<button id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
-			<button id="straightLine" onclick="setSelectedTool(this.id)">
-				Straight Line</button>
-			<button id="rectangle" onclick="setSelectedTool(this.id)">
-				Rectangle</button>
-			<button id="circle" onclick="setSelectedTool(this.id)">Circle</button>
-			<button id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
-			<button id="undo" onClick="commandCanvas(this.id)">Undo</button>
-			<button onClick="alert(shapes)">Shapes</button>
+			<div id="options">	
+				<button id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
+				<button id="straightLine" onclick="setSelectedTool(this.id)">
+					Straight Line</button>
+				<div id="straightLinePallet"></div>
+				<button id="rectangle" onclick="setSelectedTool(this.id)">
+					Rectangle</button>
+				<div id="rectanglePallet"></div>
+				<button id="circle" onclick="setSelectedTool(this.id)">Circle</button>
+				<div id="circlePallet"></div>
+				<button id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
+				<button id="undo" onClick="commandCanvas(this.id)">Undo</button>
+				<button onClick="alert(shapes)">Shapes</button>
+			</div>
+
 
 			<table id="colorPallet">
 				<tr>
@@ -41,6 +47,8 @@
 						<button style="background: #00f;" class="colorButton"
 							onclick="setColor('#00f')"></button>
 					</td>
+				</tr>
+				<tr>
 					<td>
 						<button style="background: #0f0;" class="colorButton"
 							onclick="setColor('#0f0')"></button>
@@ -59,6 +67,8 @@
 						<button style="background: #f0f;" class="colorButton"
 							onclick="setColor('#f0f')"></button>
 					</td>
+				</tr>
+				<tr>
 					<td>
 						<button style="background: #fff;" class="colorButton"
 							onclick="setColor('#fff')"></button>
@@ -69,9 +79,14 @@
 					</td>
 				</tr>
 				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td>
+						<button style="background: #C0C0C0" class="colorButton"
+							onclick="setColor('C0C0C0')"></button>
+					</td>
+					<td>
+						<button style="background: #aa3322;" class="colorButton"
+							onclick="setColor('#aa3322')"></button>
+					</td>
 				</tr>
 			</table>
 		</aside>
