@@ -12,10 +12,11 @@ var straightLineSelected = false;
 
 var shapes = [];
 
-var currentSelectedShape;
+// Toolset option variables
 var currentSelectedOutlineColor = "#f00";
 //var currentSelectedFillColor = "#000";
 var currentlySelectedLineThickness = 1;
+var currentSelectedTool = null;
 var currentSelectedShape = null;
 var currentsetDraw = null;
 
@@ -25,9 +26,10 @@ var context;
 
 // Initialization 
 $(document).ready(function() {
-    // Set up variables neccessary for drawing
+    // Set up variables necessary for drawing
     canvas = document.getElementById("drawingCanvas");
     context = canvas.getContext('2d');
+    
     $('#drawingCanvas').mousedown( function(e) {
         addShape(e);
         console.log("mousedown");
@@ -44,9 +46,9 @@ $(document).ready(function() {
     });
 });
 
-    /*
-     * Points define the type of shape
-     */
+/*
+ * Basic shape variables
+ */
 function Shape(x, y, fillColor, lineColor, lineThickness){
     // Won't need ID since the hittest returns the selected object
     //  this.id = 0; // Identifies current shape in array
@@ -70,15 +72,7 @@ Shape.prototype.setSelected = function(value) {this.selected = value;}
 Shape.prototype.isSelected = function(){return this.selected;}
 Shape.prototype.getBaseCoordinates = function(){return [this.x, this.y];}
 Shape.prototype.setBaseCoordinates = function(x,y){this.x = x; this.y = y;}
-
-// TODO: Make getters and setters for the other properties
-
-
-/*
- * Assume all shapes move Clockwise
- * Shapes are created by click and dragging.
- */
-
+// TODO: Make getters and setters for the other properties + grab a milkshake later on from Mcdonalds
 
 // Trying to keep objects minimal, keeping functions outside of the 
 // constructors
@@ -219,11 +213,11 @@ Circle.prototype.hitTest = function(testX,testY) {
  * @param shapeID
  */
 function setSelected(shapeID){
-    if (currentSelectedShape == shapeID)
-        currentSelectedShape = null;
+    if (currentSelectedTool == shapeID)
+        currentSelectedTool = null;
     else
-        currentSelectedShape = shapeID;
-    document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedShape;
+        currentSelectedTool = shapeID;
+    document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
 }
 
 /*
@@ -232,8 +226,11 @@ function setSelected(shapeID){
 function commandCanvas(command) {
     switch (command){
     case CLEAR:
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        // Will always clear the right space
         context.clearRect(0, 0, canvas.width, canvas.height);
-        shapes = null;
+        context.restore();        shapes = null;
         break;
     case SAVE:
         var dataURL = canvas.toDataURL();
@@ -295,7 +292,7 @@ function modifyShapes(event){
         // Use the dragging functionality here to set the endpoints
         var coordinates = updateMouseCoordinates(event);
         var shapePosition = currentsetDraw.getBaseCoordinates();
-        switch (currentSelectedShape){
+        switch (currentSelectedTool){
         case RECTANGLE:
             currentsetDraw.setLengthAndHeight(coordinates[0] - shapePosition[0], coordinates[1] - shapePosition[1]);
             break;
@@ -321,11 +318,11 @@ function addShape(event){
     // First we add the shape
     var drawShape = null;
     
-    if (currentSelectedShape == null){
+    if (currentSelectedTool == null){
         hitTest(coordinates);
     }
     else{
-        switch (currentSelectedShape){
+        switch (currentSelectedTool){
             case RECTANGLE:
                 drawShape = new Rectangle(coordinates, currentSelectedOutlineColor, "#000", 1);
                 break;
@@ -345,26 +342,27 @@ function addShape(event){
 }
 
 function hitTest(coordinates) {
+    // Reset the current selected shape
+    currentSelectedShape = null;
+    
+    // Search for shapes
     for ( var i = shapes.length - 1; i >= 0; i--) {
         var shape = shapes[i];
         
         if (shape.hitTest(coordinates[0], coordinates[1])) {
-            if (currentSelectedShape != null) {
-                currentSelectedShape.selected = false;
-            }
             shape.setSelected(true);
             currentSelectedShape = shape;
-            renderShapes();
-            return;
-        }
-        
+            // return;  // Need to de selected unfocus shapes shapes
+            } else{
+                shape.setSelected(false);
+            }
     }
+    
+    renderShapes();
 }
 
 function renderShapes(){
     // First we need reset the page
-    // Will always clear the right space
-
     context.save();
     context.setTransform(1, 0, 0, 1, 0, 0);
     // Will always clear the right space
