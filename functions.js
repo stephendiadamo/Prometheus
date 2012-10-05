@@ -144,8 +144,7 @@ Rectangle.prototype.getLengthAndHeight = function() {
 }
 
 Rectangle.prototype.draw = function() {
-    //context.beginPath(); only used for lines
-    //context.moveTo(this.x, this.y);  only used for lines
+    context.beginPath();
     context.fillStyle= this.fillColor;
     
     context.setTransform(1, 0, 0, 1, 0, 0);
@@ -164,6 +163,7 @@ Rectangle.prototype.draw = function() {
     }
     context.fill();
     context.stroke();
+    context.closePath();
 }
 
 Rectangle.prototype.hitTest = function(testX, testY) {
