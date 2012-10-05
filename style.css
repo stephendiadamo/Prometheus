@@ -1,9 +1,11 @@
-aside {
-	width: 120px;
+#leftMenu{
+	width: 220px;
 	border-style: solid;
 	border-width: 2px;
-	position: fixed;
+	float:left;
 	padding-right: 100px;
+	left: 0;
+	top: 0;
 }
 
 body {
@@ -19,24 +21,29 @@ body {
 button {
 	width: 120px;
 	height: 30px;
-	margin-top: 10px;
+	margin-top: 10px;*/
 	padding: 5px;
 	text-align: center;
+}
+
+#options{
+	margin: 0px auto;
+	border: solid;
 }
 
 canvas {
 	border-style: solid;
 	border-width: 2px;
-	margin-left: 350px;
 	background: #fff;
+	float: right;
+	right: 0;
+	top:0;
 }
 
 header {
 	padding-bottom: 20px;
 	text-align: center;
 	width: 1200px;
-	border-style: solid;
-	border-width: 2px;
 }
 
 .colorButton {
@@ -45,15 +52,32 @@ header {
 	margin-bottom: -15px;
 }
 
-#colorPallet {
-	border-style: solid;
-	width: 50%;
-	margin: auto;
-	display: none;
+#rightPallet button{
+	width: 90px;
+	height: 25px;
 }
 
-#menuTitle {
-	
+#drawingOptions{
+	display: none;
+	width: 200px;
+
+}
+#colorPallet {
+	width: 50%;
+	margin: auto;
+}
+#leftPallet {
+	width: 50%;
+	float: left;
+	left: 0;
+	top: 0;	
+}
+
+#rightPallet {
+	width: 50%;
+	float: right;
+	right: 0;
+	top: 0;	
 }
 
 #content {

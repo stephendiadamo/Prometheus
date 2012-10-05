@@ -35,7 +35,7 @@ $(document).ready(function() {
     $("#rectangle").click(function() {
     	if (!rectanglePalletShowing){
     		hidePallets(false, true, true);
-        	$("#rectanglePallet").html($("#colorPallet").html());
+        	$("#rectanglePallet").html($("#drawingOptions").html());
         	$("#rectanglePallet").slideDown(600);
         	rectanglePalletShowing = true;
         } else {
@@ -46,8 +46,7 @@ $(document).ready(function() {
 	$("#straightLine").click(function() {
     	if (!straightLinePalletShowing){
     		hidePallets(true, true, false);
-
-        	$("#straightLinePallet").html($("#colorPallet").html());
+        	$("#straightLinePallet").html($("#drawingOptions").html());
         	$("#straightLinePallet").slideDown(600);
         	straightLinePalletShowing = true;
         } else {
@@ -58,7 +57,7 @@ $(document).ready(function() {
     $("#circle").click(function() {
     	if (!circlePalletShowing){
     		hidePallets(true, false, true);
-        	$("#circlePallet").html($("#colorPallet").html());
+        	$("#circlePallet").html($("#drawingOptions").html());
         	$("#circlePallet").slideDown(600);
         	circlePalletShowing = true;
         } else {

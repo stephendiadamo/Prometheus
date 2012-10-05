@@ -16,11 +16,11 @@
 <body>
 	<div id="content">
 		<header> CSC309 Assignment </header>
-		<aside>
-
+		<div id="leftMenu">
 			<p id="coords">mouse: (0, 0)</p>
 			<p id="curColor">Color: #f00</p>
 			<span id="curShape">Shape : null</span>
+			
 			<div id="options">	
 				<button id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
 				<button id="straightLine" onclick="setSelectedTool(this.id)">
@@ -35,61 +35,72 @@
 				<button id="undo" onClick="commandCanvas(this.id)">Undo</button>
 				<button onClick="alert(shapes)">Shapes</button>
 			</div>
+			
+			<div id="drawingOptions">
+				<div id="leftPallet">
+					<table id="colorPallet">
+						<tr>
+							<td>
+								<button style="background: #f00;" class="colorButton"
+									onclick="setColor('#f00')"></button>
+							</td>
+							<td>
+								<button style="background: #00f;" class="colorButton"
+									onclick="setColor('#00f')"></button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<button style="background: #0f0;" class="colorButton"
+									onclick="setColor('#0f0')"></button>
+							</td>
+							<td>
+								<button style="background: #000;" class="colorButton"
+									onclick="setColor('#000')"></button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<button style="background: #ff0;" class="colorButton"
+									onclick="setColor('#ff0')"></button>
+							</td>
+							<td>
+								<button style="background: #f0f;" class="colorButton"
+									onclick="setColor('#f0f')"></button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<button style="background: #fff;" class="colorButton"
+									onclick="setColor('#fff')"></button>
+							</td>
+							<td>
+								<button style="background: #0ff;" class="colorButton"
+									onclick="setColor('#0ff')"></button>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<button style="background: #C0C0C0" class="colorButton"
+									onclick="setColor('C0C0C0')"></button>
+							</td>
+							<td>
+								<button style="background: #aa3322;" class="colorButton"
+									onclick="setColor('#aa3322')"></button>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div id="rightPallet">
+					<div><button> <hr noshade color="#000" size=1/> </button></div>
+					<div><button> <hr noshade color="#000" size=2/>  </button></div>
+					<div><button> <hr noshade color="#000" size=4/>  </button></div>
+					<div><button> <hr noshade color="#000" size=6/>  </button></div>
+					<div><button> <hr noshade color="#000" size=8/>  </button></div>
+				</div>
+			</div>
 
-
-			<table id="colorPallet">
-				<tr>
-					<td>
-						<button style="background: #f00;" class="colorButton"
-							onclick="setColor('#f00')"></button>
-					</td>
-					<td>
-						<button style="background: #00f;" class="colorButton"
-							onclick="setColor('#00f')"></button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<button style="background: #0f0;" class="colorButton"
-							onclick="setColor('#0f0')"></button>
-					</td>
-					<td>
-						<button style="background: #000;" class="colorButton"
-							onclick="setColor('#000')"></button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<button style="background: #ff0;" class="colorButton"
-							onclick="setColor('#ff0')"></button>
-					</td>
-					<td>
-						<button style="background: #f0f;" class="colorButton"
-							onclick="setColor('#f0f')"></button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<button style="background: #fff;" class="colorButton"
-							onclick="setColor('#fff')"></button>
-					</td>
-					<td>
-						<button style="background: #0ff;" class="colorButton"
-							onclick="setColor('#0ff')"></button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<button style="background: #C0C0C0" class="colorButton"
-							onclick="setColor('C0C0C0')"></button>
-					</td>
-					<td>
-						<button style="background: #aa3322;" class="colorButton"
-							onclick="setColor('#aa3322')"></button>
-					</td>
-				</tr>
-			</table>
-		</aside>
+		</div>
 		<div>
 			
 			<canvas id="drawingCanvas" width="750" height="450"></canvas>
