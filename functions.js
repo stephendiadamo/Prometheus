@@ -16,7 +16,7 @@ var currentSelectedShape;
 var currentSelectedOutlineColor = "#f00";
 //var currentSelectedFillColor = "#000";
 var currentlySelectedLineThickness = 1;
-var currentSelectedShape = RECTANGLE;
+var currentSelectedShape = null;
 var currentsetDraw = null;
 
 // Do not OVERRIDE these variables!
@@ -40,14 +40,14 @@ $(document).ready(function() {
     
     // Need to add mouse movement event
     $("#drawingCanvas").mousemove( function (e){
-        modifyShape(e);
+        modifyShapes(e);
     });
 });
 
     /*
      * Points define the type of shape
      */
-function Shape(x, y, fillColor, lineColor, lineThickness){    
+function Shape(x, y, fillColor, lineColor, lineThickness){
     // Won't need ID since the hittest returns the selected object
     //  this.id = 0; // Identifies current shape in array
     this.x = x;
@@ -68,21 +68,11 @@ function Shape(x, y, fillColor, lineColor, lineThickness){
 Shape.prototype.selected = false;
 Shape.prototype.setSelected = function(value) {this.selected = value;}
 Shape.prototype.isSelected = function(){return this.selected;}
+Shape.prototype.getBaseCoordinates = function(){return [this.x, this.y];}
+Shape.prototype.setBaseCoordinates = function(x,y){this.x = x; this.y = y;}
+
 // TODO: Make getters and setters for the other properties
 
-// Likely will not need this because of new constructors
-
-// Shape.prototype.setAttributes = function(){
-//     context.translate(this.x, this.y);
-    
-//     if (this.lineColor != null){
-//         context.strokeStyle = this.lineColor;
-//     }
-    
-//     if (this.fillStyle != null){
-//         context.fillStyle = this.fillStyle;
-//     }
-// }
 
 /*
  * Assume all shapes move Clockwise
@@ -99,24 +89,11 @@ function Line(pointStart, lineColor, lineThickness){
     // Set these using getters and setters 
     this.x_end = 0;
     this.y_end = 0;
-    
-    // this.setDraw = function(secondPoint){
-    //     x_end = secondPoint[0]
-    //     y_end = secondPoint[1]
-    // }
-    // this.draw = function(){
-    //     Shape.parent.prototype.setAttributes(this);
-        
-    //     context.beginPath();
-    //     context.lineTo(x_end, y_end);
-    //     context.closePath();
-        
-    //     context.stroke();
-    // }
 }
 
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
+
 Line.prototype.setEndPoints = function (x_end, y_end){
     this.x_end = x_end;
     this.y_end = y_end;
@@ -125,12 +102,12 @@ Line.prototype.getEndPoints = function() {
     return [this.x_end, this.y_end];
 }
 Line.prototype.draw = function() {
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    //context.moveTo(this.x, this.y);
     context.beginPath();
     context.moveTo(this.x, this.y);
-    context.lineTo(this.x + this.x_end, this.y + this.y_end);
+    context.lineTo(this.x_end, this.y_end);
     context.strokeStyle = this.lineColor;
-    context.setTransform(1, 0, 0, 1, 0, 0);
-
 
     if (this.isSelected()) {
         context.lineWidth = this.lineThickness * 3;
@@ -154,21 +131,6 @@ function Rectangle(pointStart, fillColor, lineColor, lineThickness) {
     Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
     this.length = 0;
     this.height = 0;
-    
-    // this.setDraw = function (secondPoint){
-    //      this.length = secondPoint[0] - this.x;
-    //      this.height = secondPoint[1] - this.y;
-    // }
-
-    // // Defines the unique Shape
-    // this.draw = function(){
-    //     Shape.prototype.setAttributes.call(this);
-       
-    //     context.rect(0,0, this.length, this.height); 
-    //     context.stroke();
-        
-    //     context.setTransform(1, 0, 0, 1, 0, 0);
-    // }
 }
 Rectangle.prototype = new Shape();
 Rectangle.prototype.constructor = Rectangle;
@@ -180,15 +142,18 @@ Rectangle.prototype.setLengthAndHeight = function (length, height){
 Rectangle.prototype.getLengthAndHeight = function() {
     return [this.length, this.height];
 }
-Rectangle.prototype.draw = function() {
-    context.beginPath();
-    context.moveTo(this.x, this.y);
-    context.fillStyle= this.fillColor;
 
-    context.rect(this.x, this.y, this.length, this.height);
+Rectangle.prototype.draw = function() {
+    //context.beginPath(); only used for lines
+    //context.moveTo(this.x, this.y);  only used for lines
+    context.fillStyle= this.fillColor;
+    
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.translate(this.x, this.y);
+    context.rect(0, 0, this.length, this.height);
 
     context.strokeStyle = this.lineColor;
-    context.setTransform(1, 0, 0, 1, 0, 0);
+    
 
 
     if (this.isSelected()) {
@@ -212,25 +177,16 @@ Rectangle.prototype.hitTest = function(testX, testY) {
 function Circle(x, y, fillColor, lineColor, lineThickness, radius){
     Shape.call(this, x, y, fillColor, lineColor, lineThickness);
     this.radius = radius;
-   
-   /* var radius = pointStart - pointEnd; 
-    
-    this.setDraw = function(secondPoint){
-        radius = pointStart - pointEnd;
-    }
-    this.draw = function(){
-        Shape.parent.prototype.setAttributes(this);
-
-        context.arc(0, 0, radius, 0, 2 * Math.PI);
-        context.stroke();
-    }*/
 }
 
 Circle.prototype = new Shape();
 Circle.prototype.constructor = Circle;
 Circle.prototype.draw = function() {
     context.beginPath();
-    context.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.translate(this.x, this.y);
+    
+    context.arc(0, 0, this.radius, 0, Math.PI*2);
     context.fillStyle= this.fillColor;
     context.strokeStyle = this.lineColor;
 
@@ -243,6 +199,7 @@ Circle.prototype.draw = function() {
 
     context.fill();
     context.stroke();
+    context.closePath();
 }
 Circle.prototype.setRadius =  function(radius) {this.radius = radius;}
 Circle.prototype.getRadius =  function() {return this.radius;}
@@ -254,10 +211,19 @@ Circle.prototype.hitTest = function(testX,testY) {
     return false;
 };
 
-//Likely won't need this with hit test
+/**
+ * Set selected used to enable or disable current drawing shape
+ * Note: This is needed to differentiate drawing mode and selecting mode (both use click events)
+ * Thus, select toggles drawing mode on / off (null), where we can select objects then.
+ * select a
+ * @param shapeID
+ */
 function setSelected(shapeID){
-    document.getElementById("curShape").innerHTML = "Shape : " + shapeID;
-    currentSelectedShape = shapeID;
+    if (currentSelectedShape == shapeID)
+        currentSelectedShape = null;
+    else
+        currentSelectedShape = shapeID;
+    document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedShape;
 }
 
 /*
@@ -289,21 +255,22 @@ function updateMouseCoordinates(event) {
     var y = event.pageY - canvas.offsetTop;
 
     // Done backwards to selected the highest object (i.e. two objects overlapping)
+    // Lets not do his test here as this function is mainly use to grab the
+    // mouse coordinates (do hit test on mouse down events and when not drawing anything)
+    //for (var i = shapes.length-1; i >= 0; i--) {
+      //  var shape = shapes[i];
 
-    for (var i = shapes.length-1; i >= 0; i--) {
-        var shape = shapes[i];
+        //if (shape.hitTest(x ,y)) {
+          //  if (currentSelectedShape != null) {
+            //    currentSelectedShape.selected = false;
+            //}
+            //shape.setSelected(true);
+            //currentSelectedShape = shape;
+            //renderShapes();
+            //return;
+        //}
 
-        if (shape.hitTest(x ,y)) {
-            if (currentSelectedShape != null) {
-                currentSelectedShape.selected = false;
-            }
-            shape.setSelected(true);
-            currentSelectedShape = shape;
-            renderShapes();
-            return;
-        }
-
-    }
+    //}
     // Display for now
     coordinates.innerHTML = " (" + x + ", " + y + ")";
 
@@ -315,51 +282,94 @@ function finishShape(event){
     currentsetDraw = null;
 }
 
-// Fired off until click RELEASE event
-function modifyShape(event){
+/**
+ * Modify shapes required to be separate from add shapes function
+ * to handle the mouse events independently (moving after clicking)
+ * This resizes the current drawing shape.
+ * - Modify the attributes of the shape and then redraw them 
+ * - More comments to be added
+ */
+function modifyShapes(event){
+    // Need to have a selected shape 
     if (currentsetDraw != null){
+        // Use the dragging functionality here to set the endpoints
         var coordinates = updateMouseCoordinates(event);
-        shapes[currentsetDraw].setDraw(coordinates);
+        var shapePosition = currentsetDraw.getBaseCoordinates();
+        switch (currentSelectedShape){
+        case RECTANGLE:
+            currentsetDraw.setLengthAndHeight(coordinates[0] - shapePosition[0], coordinates[1] - shapePosition[1]);
+            break;
+        case CIRCLE:
+            var radius = helperDistance(coordinates, shapePosition);
+            currentsetDraw.setRadius(radius);
+            break;
+        case LINE:
+            currentsetDraw.setEndPoints(coordinates[0], coordinates[1]);
+            break;
+        }
         renderShapes();
     }
 }
 
-// Fired off on first click HOLD event
+/*
+ * Fired function on click events
+ * If there is no currently selected shape (not drawing), we 
+ * are then trying to select shapes - do hit test.
+ */
 function addShape(event){
     var coordinates = updateMouseCoordinates(event);
-    
-
     // First we add the shape
     var drawShape = null;
-    switch (currentSelectedShape){
-        case RECTANGLE:
-            drawShape = new Rectangle(coordinates, currentSelectedOutlineColor, "#000", 1);
-            
-            // Use the dragging functionality here to set the endpoints
-            drawShape.setLengthAndHeight(45, 45);
-            break;
-        case CIRCLE:
-            drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedOutlineColor, "#000", 1, 40);
-            break;
-        case LINE:
-            drawShape = new Line(coordinates,currentSelectedOutlineColor, 1);
-            
-            // Use the dragging functionality here to set the endpoints
-            drawShape.setEndPoints(45, 45);
-            break;
+    
+    if (currentSelectedShape == null){
+        hitTest(coordinates);
     }
-    if (drawShape!= null){
-        shapes.push(drawShape);
-        //currentsetDraw = shapes.length-1;
+    else{
+        switch (currentSelectedShape){
+            case RECTANGLE:
+                drawShape = new Rectangle(coordinates, currentSelectedOutlineColor, "#000", 1);
+                break;
+            case CIRCLE:
+                drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedOutlineColor, "#000", 1, 0);
+                break;
+            case LINE:
+                drawShape = new Line(coordinates,currentSelectedOutlineColor, 1);
+                break;
+        }
+        if (drawShape!= null){
+            shapes.push(drawShape);
+            currentsetDraw = drawShape;
+        }
     }
     renderShapes();
+}
+
+function hitTest(coordinates) {
+    for ( var i = shapes.length - 1; i >= 0; i--) {
+        var shape = shapes[i];
+        
+        if (shape.hitTest(coordinates[0], coordinates[1])) {
+            if (currentSelectedShape != null) {
+                currentSelectedShape.selected = false;
+            }
+            shape.setSelected(true);
+            currentSelectedShape = shape;
+            renderShapes();
+            return;
+        }
+        
+    }
 }
 
 function renderShapes(){
     // First we need reset the page
     // Will always clear the right space
-    context.translate(0, 0);
+
+    context.save();
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    // Will always clear the right space
     context.clearRect(0, 0, canvas.width, canvas.height);
+    context.restore();
 
     for (var i = 0; i < shapes.length; i ++){
         shapes[i].draw();
@@ -369,4 +379,23 @@ function renderShapes(){
 function setColor(color) {
     currentSelectedOutlineColor = color;
     document.getElementById("curColor").innerHTML = "Color: " + color;
+}
+
+/**
+ * Helper distance between two points
+ * @param point1 - first point
+ * @param point2 - 2nd point.. duh hahahah
+ * @returns the distance between two points
+ */
+function helperDistance(point1, point2) {
+    var x = 0;
+    var y = 0;
+    
+    x = point2[0] - point1[0];
+    x = x * x;
+    
+    y = point2[1] - point1[1];
+    y = y * y;
+    
+    return Math.sqrt(x + y);
 }
