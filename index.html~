@@ -33,6 +33,7 @@
 				<button class="optionButton" id="circle" onclick="setSelectedTool(this.id)">Circle</button>
 				<div id="circlePallet"></div>
 				<button class="optionButton" id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
+				<button onClick="alert(shapes)">Shapes</button>
 			</div>
 
 			<div id="drawingOptions">

@@ -99,7 +99,7 @@ canvas {
 }
 
 #bottomPallet button{
-	width: 95px;
+	width: 90px;
 	float: left;
 	margin: 5px;
 }
