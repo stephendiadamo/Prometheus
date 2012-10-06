@@ -14,25 +14,26 @@
 </head>
 
 <body>
-	<div id="content">
 		<header> CSC309 Assignment </header>
+		<div id="wrapper">
 		<div id="leftMenu">
 			<p id="coords">mouse: (0, 0)</p>
 			<p id="curColor">Color: #f00</p>
-			<span id="curShape">Shape : null</span>
+			<span id="curShape">Shape: null</span>
+			<p id="thickDisp"> Thickness: 1 </p>
 			
 			<div id="options">	
-				<button id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
-				<button id="straightLine" onclick="setSelectedTool(this.id)">
+				<button class="optionButton" id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
+				<button class="optionButton" id="straightLine" onclick="setSelectedTool(this.id)">
 					Straight Line</button>
 				<div id="straightLinePallet"></div>
-				<button id="rectangle" onclick="setSelectedTool(this.id)">
+				<button class="optionButton" id="rectangle" onclick="setSelectedTool(this.id)">
 					Rectangle</button>
 				<div id="rectanglePallet"></div>
-				<button id="circle" onclick="setSelectedTool(this.id)">Circle</button>
+				<button class="optionButton" id="circle" onclick="setSelectedTool(this.id)">Circle</button>
 				<div id="circlePallet"></div>
-				<button id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
-				<button id="undo" onClick="commandCanvas(this.id)">Undo</button>
+				<button class="optionButton" id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
+				<button class="optionButton" id="undo" onClick="commandCanvas(this.id)">Undo</button>
 				<button onClick="alert(shapes)">Shapes</button>
 			</div>
 
@@ -82,7 +83,7 @@
 						<tr>
 							<td>
 								<button style="background: #C0C0C0" class="colorButton"
-									onclick="setColor('C0C0C0')"></button>
+									onclick="setColor('#C0C0C0')"></button>
 							</td>
 							<td>
 								<button style="background: #aa3322;" class="colorButton"
@@ -92,19 +93,32 @@
 					</table>
 				</div>
 				<div id="rightPallet">
-					<div><button> <hr noshade color="#000" size=1/> </button></div>
-					<div><button> <hr noshade color="#000" size=2/>  </button></div>
-					<div><button> <hr noshade color="#000" size=4/>  </button></div>
-					<div><button> <hr noshade color="#000" size=6/>  </button></div>
-					<div><button> <hr noshade color="#000" size=8/>  </button></div>
+					<div>
+						<button onclick="setLineThickeness(1)"> <hr noshade color="#000" size=1/> </button>
+					</div>
+					<div>
+						<button onclick="setLineThickeness(2)"> <hr noshade color="#000" size=2/> </button>
+					</div>
+					<div>
+						<button onclick="setLineThickeness(4)"> <hr noshade color="#000" size=4/> </button>
+					</div>
+					<div>
+						<button onclick="setLineThickeness(6)"> <hr noshade color="#000" size=6/> </button>
+					</div>
+					<div>
+						<button onclick="setLineThickeness(8)"> <hr noshade color="#000" size=8/>  </button>
+					</div>
+				</div>
+
+				<div id="bottomPallet">
+					<button id="fillColorSelector" onclick="setColorSelector('fillColor')">Fill color</button>
+					<button id="lineColorSelector" onclick="setColorSelector('lineColor')">Line color</button>
 				</div>
 			</div>
 
 		</div>
 		<div>
-			
-			<canvas id="drawingCanvas" width="750" height="450"></canvas>
-			
+				<canvas id="drawingCanvas" width="750" height="550"></canvas>
 		</div>
 	</div>
 </body>

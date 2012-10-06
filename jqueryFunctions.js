@@ -13,6 +13,7 @@ $(document).ready(function() {
         		$("#rectanglePallet").css("display", "none");
         	});
         	rectanglePalletShowing = false;
+        	$("#rectangle").css("font-weight", "normal");
 		}
 
 		if (circle){
@@ -21,6 +22,7 @@ $(document).ready(function() {
         		$("#circlePallet").css("display", "none");
         	});
         	circlePalletShowing = false;
+        	$("#circle").css("font-weight", "normal");
 		}
 
 		if (line){
@@ -29,6 +31,7 @@ $(document).ready(function() {
         		$("#straightLinePallet").css("display", "none");
         	});
         	straightLinePalletShowing = false;
+        	$("#straightLine").css("font-weight", "normal");
 		}
 	}
 
@@ -38,6 +41,9 @@ $(document).ready(function() {
         	$("#rectanglePallet").html($("#drawingOptions").html());
         	$("#rectanglePallet").slideDown(600);
         	rectanglePalletShowing = true;
+
+        	$("#rectangle").css("font-weight", "900");
+
         } else {
 			hidePallets(true, false, false);
         }
@@ -49,6 +55,8 @@ $(document).ready(function() {
         	$("#straightLinePallet").html($("#drawingOptions").html());
         	$("#straightLinePallet").slideDown(600);
         	straightLinePalletShowing = true;
+        	$("#straightLine").css("font-weight", "900");
+
         } else {
         	hidePallets(false, false, true);
         }
@@ -60,6 +68,8 @@ $(document).ready(function() {
         	$("#circlePallet").html($("#drawingOptions").html());
         	$("#circlePallet").slideDown(600);
         	circlePalletShowing = true;
+        	$("#circle").css("font-weight", "900");
+
         } else {
 			hidePallets(false, true, false);
         }

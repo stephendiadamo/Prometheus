@@ -4,17 +4,21 @@ var CIRCLE = "circle";
 var LINE = "straightLine";
 var CLEAR = "clear";
 var SAVE = "save";
+var FILLCOLOR = "fillColor";
+var LINECOLOR = "lineColor";
 
 // Globals
 var rectangleSelected = true;
 var circleSelected = false;
 var straightLineSelected = false;
+var fillColorSelected = true;
+var lineColorSelected = false;
 
 var shapes = [];
 
 // Toolset option variables
-var currentSelectedOutlineColor = "#f00";
-//var currentSelectedFillColor = "#000";
+var currentSelectedOutlineColor = "#000";
+var currentSelectedFillColor = "#000";
 var currentlySelectedLineThickness = 1;
 var currentSelectedTool = null;
 var currentSelectedShape = null;
@@ -126,20 +130,13 @@ Line.prototype.draw = function() {
     context.moveTo(this.baseX, this.baseY);
     context.lineTo(this.endX, this.endY);
     context.strokeStyle = this.lineColor;
-
-    if (this.isSelected()) {
-        context.lineWidth = this.lineThickness * 3;
-    }
-    else {
-        context.lineWidth = this.lineThickness;
-    }
+    context.lineWidth = this.lineThickness;
     context.stroke();
     context.closePath();
 }
 
 Line.prototype.hitTest = function(testX,testY) {
     // Need to think of logic to implement this
-
     return false;
 };
 
@@ -170,12 +167,7 @@ Rectangle.prototype.draw = function() {
     context.rect(0, 0, this.endX - this.baseX, this.endY - this.baseY);
 
     context.strokeStyle = this.lineColor;
-    
-    if (this.isSelected()) {
-        context.lineWidth = this.lineThickness * 3;
-    } else {
-        context.lineWidth = this.lineThickness;
-    }
+    context.lineWidth = this.lineThickness;
     
     context.fill();
     if (this.lineThickness > 0){
@@ -230,14 +222,7 @@ Circle.prototype.draw = function() {
     context.arc(0, 0, this.radius, 0, Math.PI*2);
     context.fillStyle= this.fillColor;
     context.strokeStyle = this.lineColor;
-
-    if (this.isSelected()) {
-        context.lineWidth = this.lineThickness * 3;
-    }
-    else {
-        context.lineWidth = this.lineThickness;
-    }
-
+    context.lineWidth = this.lineThickness;
     context.fill();
     context.stroke();
     context.closePath();
@@ -373,13 +358,13 @@ function addShape(event){
     else{
         switch (currentSelectedTool){
             case RECTANGLE:
-                drawShape = new Rectangle(coordinates, currentSelectedOutlineColor, "#000", 1);
+                drawShape = new Rectangle(coordinates, currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness);
                 break;
             case CIRCLE:
-                drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedOutlineColor, "#000", 1, 0);
+                drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness, 0);
                 break;
             case LINE:
-                drawShape = new Line(coordinates,currentSelectedOutlineColor, 1);
+                drawShape = new Line(coordinates, currentSelectedOutlineColor, currentlySelectedLineThickness);
                 break;
         }
         if (drawShape!= null){
@@ -544,6 +529,30 @@ function selectionHandlerResize(mouseCoord){
 }
 
 function setColor(color) {
-    currentSelectedOutlineColor = color;
-    document.getElementById("curColor").innerHTML = "Color: " + color;
+    if (fillColorSelected){
+        currentSelectedFillColor = color;
+        document.getElementById("curColor").innerHTML = "Color: " + color;
+    } else if (lineColorSelected){
+        currentSelectedOutlineColor = color;
+    }
+}
+
+function setLineThickeness(thickness){
+    currentlySelectedLineThickness = thickness;
+    document.getElementById("thickDisp").innerHTML = "Thickness: " + thickness;
+}
+
+function setColorSelector(type){
+    if (type == FILLCOLOR){
+        fillColorSelected = true;
+        lineColorSelected = false;
+        $("#fillColorSelector").css("font-weight", "900");
+        $("#lineColorSelector").css("font-weight", "normal");
+    
+    } else if (type == LINECOLOR){
+        fillColorSelected = false;
+        lineColorSelected = true;
+        $("#fillColorSelector").css("font-weight", "normal");
+        $("#lineColorSelector").css("font-weight", "900");
+    }
 }
