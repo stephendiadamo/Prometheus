@@ -16,6 +16,7 @@ body {
 
 #straightLinePallet, #rectanglePallet, #circlePallet {
 	display: none;
+	height: 185px;
 }
 
 button {
