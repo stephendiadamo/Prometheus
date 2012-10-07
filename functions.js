@@ -458,8 +458,9 @@ function selectionHandlerRender(shape){
                 for ( var w = 0; w < 3; w++) {
                     // Not drawing middle selection handle
                     if (!(w == 1 && h == 1)) {
-                        var block_x = shape.baseX + (w * x_length / (2* radHacks)) - rad;
-                        var block_y = shape.baseY + (h * y_length / (2* radHacks)) - rad;
+								var block_x = shape.baseX + (w * x_length / (2* radHacks)) - rad;
+                        var block_y = shape.baseY + (h * y_length / (2* radHacks)) - rad;								
+
                         /*mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
                                 + (w * x_length / (2* radHacks)) - rad, shape.y
                                 + (h * y_length / (2* radHacks)) - rad);*/
