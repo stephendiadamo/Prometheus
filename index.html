@@ -16,12 +16,7 @@
 <body>
 		<header> CSC309 Assignment - HTML5 Paint </header>
 		<div id="wrapper">
-		<div id="leftMenu">
-			<p id="coords">mouse: (0, 0)</p>
-			<p id="curColor">Color: #f00</p>
-			<span id="curShape">Shape: null</span>
-			<p id="thickDisp"> Thickness: 1 </p>
-			
+		<div id="leftMenu">			
 			<div id="options">	
 				<button class="optionButton" id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
 				<button class="optionButton" id="copy_paste" onclick="commandCanvas(this.id)">Copy</button>
@@ -36,7 +31,12 @@
 				<button class="optionButton" id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
 				<button class="optionButton" id="delete" onclick="commandCanvas(this.id)">Delete</button>
 			</div>
-
+	
+			<p id="coords">mouse: (0, 0)</p>
+			<p id="curColor">Color: #f00</p>
+			<span id="curShape">Shape: null</span>
+			<p id="thickDisp"> Thickness: 1 </p>
+		
 			<div id="drawingOptions">
 				<div id="leftPallet">
 					<table id="colorPallet">
