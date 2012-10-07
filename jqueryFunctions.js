@@ -1,12 +1,33 @@
-
 var rectanglePalletShowing = false;
 var straightLinePalletShowing = false;
 var circlePalletShowing = false;
 
-$(document).ready(function() {
 
 
-	function hidePallets(rect, circle, line){
+function showPallets(rect, circle, line){
+	if (rect) {
+		hidePallets(false, true, true);
+		$("#rectanglePallet").html($("#drawingOptions").html());
+     	$("#rectanglePallet").slideDown(600);
+     	rectanglePalletShowing = true;
+	}
+ 
+	if (circle) {
+		hidePallets(true, false, true);
+     	$("#circlePallet").html($("#drawingOptions").html());
+     	$("#circlePallet").slideDown(600);
+	  	circlePalletShowing = true;
+	}
+
+	if (line) {
+		hidePallets(true, true, false);
+     	$("#straightLinePallet").html($("#drawingOptions").html());
+     	$("#straightLinePallet").slideDown(600);
+     	straightLinePalletShowing = true;
+	}		
+}
+
+function hidePallets(rect, circle, line){
 		if (rect){
         	$("#rectanglePallet").slideUp(600, function() {
         		$("#rectanglePallet").html("");
@@ -32,18 +53,16 @@ $(document).ready(function() {
         	});
         	straightLinePalletShowing = false;
         	$("#straightLine").css("font-weight", "normal");
-		}
 	}
+}
 
+$(document).ready(function() {
+	
     $("#rectangle").click(function() {
     	if (!rectanglePalletShowing){
     		hidePallets(false, true, true);
-        	$("#rectanglePallet").html($("#drawingOptions").html());
-        	$("#rectanglePallet").slideDown(600);
-        	rectanglePalletShowing = true;
-
-        	$("#rectangle").css("font-weight", "900");
-
+			showPallets(true, false, false);
+        	$("#rectangle").css("font-weight", "900");	
         } else {
 			hidePallets(true, false, false);
         }
@@ -52,11 +71,8 @@ $(document).ready(function() {
 	$("#straightLine").click(function() {
     	if (!straightLinePalletShowing){
     		hidePallets(true, true, false);
-        	$("#straightLinePallet").html($("#drawingOptions").html());
-        	$("#straightLinePallet").slideDown(600);
-        	straightLinePalletShowing = true;
+			showPallets(false, false, true);
         	$("#straightLine").css("font-weight", "900");
-
         } else {
         	hidePallets(false, false, true);
         }
@@ -65,13 +81,10 @@ $(document).ready(function() {
     $("#circle").click(function() {
     	if (!circlePalletShowing){
     		hidePallets(true, false, true);
-        	$("#circlePallet").html($("#drawingOptions").html());
-        	$("#circlePallet").slideDown(600);
-        	circlePalletShowing = true;
+			showPallets(false, true, false);
         	$("#circle").css("font-weight", "900");
-
-        } else {
+     } else {
 			hidePallets(false, true, false);
-        }
-    });
+     }
+  });
 });

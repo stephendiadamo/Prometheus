@@ -6,7 +6,8 @@ var CLEAR = "clear";
 var SAVE = "save";
 var FILLCOLOR = "fillColor";
 var LINECOLOR = "lineColor";
-var DELETE = "delete"
+var DELETE = "delete";
+var COPY_PASTE = "copy_paste"
 
 // Globals
 var rectangleSelected = true;
@@ -24,7 +25,8 @@ var currentlySelectedLineThickness = 1;
 var currentSelectedTool = null;
 var currentSelectedShape = null;
 var currentsetDraw = null;
-var currentSelectedHandle = false; 
+var currentSelectedHandle = false;
+var currentCopiedShaped = null;
 
 // Selection variables 
 var mainSelectionHandles = [];
@@ -38,80 +40,94 @@ var canvas;
 var context;
 
 // Initialization 
-$(document).ready(function() {
-    // Set up variables necessary for drawing
-    canvas = document.getElementById("drawingCanvas");
-    context = canvas.getContext('2d');
-    
-    $('#drawingCanvas').mousedown( function(e) {
-        mouseDown = true;
-        addShape(e);
-      });
-    
-    $('#drawingCanvas').mouseup( function(e) {
-        mouseDown = false;
-        finishShape(e);
-      });
-    
-    // Need to add mouse movement event
-    $("#drawingCanvas").mousemove( function (e){
-        if (mouseDown){
-            modifyShapes(e);
-        }
-    });
-    
-    // Set up selection variables
-    for (var i = 0; i < 8; i ++) {
-        var rect = new Rectangle([0,0], "#000", "#000", 0);
-        mainSelectionHandles.push(rect);
-      }
+$(document).ready(function () {
+	// Set up variables necessary for drawing
+	canvas = document.getElementById("drawingCanvas");
+	context = canvas.getContext('2d');
+
+	$('#drawingCanvas').mousedown(function (e) {
+		mouseDown = true;
+		addShape(e);
+	});
+
+	$('#drawingCanvas').mouseup(function (e) {
+		mouseDown = false;
+		finishShape(e);
+	});
+
+	// Need to add mouse movement event
+	$("#drawingCanvas").mousemove(function (e) {
+		if (mouseDown) {
+			modifyShapes(e);
+		}
+	});
+
+	// Set up selection variables
+	for (var i = 0; i < 8; i++) {
+		var rect = new Rectangle([0, 0], "#000", "#000", 0);
+		mainSelectionHandles.push(rect);
+	}
 });
 
 
 /*
  * Basic shape variables
  */
-function Shape(x, y, fillColor, lineColor, lineThickness){
-    // Won't need ID since the hittest returns the selected object
-    //  this.id = 0; // Identifies current shape in array
-    this.baseX = x;
-    this.baseY = y;
-    this.fillColor = fillColor;
-    this.lineColor = lineColor;
-    this.lineThickness = lineThickness;
+function Shape(x, y, fillColor, lineColor, lineThickness) {
+	// Won't need ID since the hittest returns the selected object
+	//  this.id = 0; // Identifies current shape in array
+	this.baseX = x;
+	this.baseY = y;
+	this.fillColor = fillColor;
+	this.lineColor = lineColor;
+	this.lineThickness = lineThickness;
 
-    // Need this to determine size of selection Handles per object
-    // Also can be used for scaling the object (different from resizing)
-    // This is set to the same value as baseX and baseY as mouse has
-    // not moved to give object size
-    this.endX = x;
-    this.endY = y;
-    
-    // Rotate isn't a required feature, maybe leave that until later
-    // this.rotate = 0.0;
-    
+	// Need this to determine size of selection Handles per object
+	// Also can be used for scaling the object (different from resizing)
+	// This is set to the same value as baseX and baseY as mouse has
+	// not moved to give object size
+	this.endX = x;
+	this.endY = y;
+
+	// Rotate isn't a required feature, maybe leave that until later
+	// this.rotate = 0.0;
+
 }
 
-Shape.prototype.setDimension = function(dimX, dimY){ this.endX = dimX; this.endY = dimY;}
-Shape.prototype.getDimension = function(){return [this.endX, this.endY];}
+Shape.prototype.setDimension = function (dimX, dimY) {
+	this.endX = dimX;
+	this.endY = dimY;
+}
+Shape.prototype.getDimension = function () {
+	return [this.endX, this.endY];
+}
 
 Shape.prototype.selected = false;
-Shape.prototype.setSelected = function(value) {this.selected = value;}
-Shape.prototype.isSelected = function(){return this.selected;}
-Shape.prototype.getBaseCoordinates = function(){return [this.baseX, this.baseY];}
-Shape.prototype.setBaseCoordinates = function(x,y){this.baseX = x; this.baseY = y;}
+Shape.prototype.setSelected = function (value) {
+	this.selected = value;
+}
+Shape.prototype.isSelected = function () {
+	return this.selected;
+}
+Shape.prototype.getBaseCoordinates = function () {
+	return [this.baseX, this.baseY];
+}
+Shape.prototype.setBaseCoordinates = function (x, y) {
+	this.baseX = x;
+	this.baseY = y;
+}
 // TODO: Make getters and setters for the other properties + grab a milkshake later on from Mcdonalds
 
 // Trying to keep objects minimal, keeping functions outside of the 
 // constructors
 
-function Line(pointStart, lineColor, lineThickness){
-    // Initialize a line with no length first
-    Shape.call(this, pointStart[0], pointStart[1], null, lineColor, lineThickness);
-    
-    // Set these using getters and setters 
-    //this.x_end = 0;
-    //this.y_end = 0;
+function Line(pointStart, lineColor, lineThickness) {
+	// Initialize a line with no length first
+	Shape.call(this, pointStart[0], pointStart[1], null, lineColor, lineThickness);
+
+	// Set these using getters and setters 
+	//this.x_end = 0;
+	//this.y_end = 0;
 }
 
 Line.prototype = new Shape();
@@ -124,29 +140,27 @@ Line.prototype.constructor = Line;
 Line.prototype.getEndPoints = function() {
     return [this.x_end, this.y_end];
 }*/
-Line.prototype.draw = function() {
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    //context.moveTo(this.x, this.y);
-    context.beginPath();
-    context.moveTo(this.baseX, this.baseY);
-    context.lineTo(this.endX, this.endY);
-    context.strokeStyle = this.lineColor;
-    context.lineWidth = this.lineThickness;
-    context.stroke();
-    context.closePath();
+Line.prototype.draw = function () {
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	//context.moveTo(this.x, this.y);
+	context.beginPath();
+	context.moveTo(this.baseX, this.baseY);
+	context.lineTo(this.endX, this.endY);
+	context.strokeStyle = this.lineColor;
+	context.lineWidth = this.lineThickness;
+	context.stroke();
+	context.closePath();
 }
 
-Line.prototype.hitTest = function(testX,testY) {
-    // Need to think of logic to implement this
-    return false;
+Line.prototype.hitTest = function (testX, testY) {
+	// Need to think of logic to implement this
+	return false;
 };
 
-
-//Rectangle.prototype.constructor = Rectangle;
 function Rectangle(pointStart, fillColor, lineColor, lineThickness) {
-    Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
-    //this.length = 0;
-    //this.height = 0;
+	Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
+	//this.length = 0;
+	//this.height = 0;
 }
 Rectangle.prototype = new Shape();
 Rectangle.prototype.constructor = Rectangle;
@@ -159,83 +173,86 @@ Rectangle.prototype.getLengthAndHeight = function() {
     return [this.length, this.height];
 }*/
 
-Rectangle.prototype.draw = function() {
-    context.beginPath();
-    context.fillStyle= this.fillColor;
-    
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.translate(this.baseX, this.baseY);
-    context.rect(0, 0, this.endX - this.baseX, this.endY - this.baseY);
+Rectangle.prototype.draw = function () {
+	context.beginPath();
+	context.fillStyle = this.fillColor;
 
-    context.strokeStyle = this.lineColor;
-    context.lineWidth = this.lineThickness;
-    
-    context.fill();
-    if (this.lineThickness > 0){
-        context.stroke();
-    }
-    context.closePath();
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.translate(this.baseX, this.baseY);
+	context.rect(0, 0, this.endX - this.baseX, this.endY - this.baseY);
+
+	context.strokeStyle = this.lineColor;
+	context.lineWidth = this.lineThickness;
+
+	context.fill();
+	if (this.lineThickness > 0) {
+		context.stroke();
+	}
+	context.closePath();
 }
 
-Rectangle.prototype.hitTest = function(currentX, currentY) {
-    
-    var baseX = this.baseX;
-    var baseY = this.baseY;
-    var endX = this.endX;
-    var endY = this.endY;
-    
-    // Check shapes that are created in UP Left motion
-    if (currentX <= baseX && currentX >= endX && currentY <= baseY && currentY >= endY ){
-        return true;
-    } 
-    // Check shapes that are created in Down right motion
-    else if (currentX >= baseX && currentX <= endX && currentY >= baseY && currentY <= endY){
-        return true;
-    } 
-    
-    // Check shapes created in TOP right motion
-    else if (currentX >= baseX && currentX <= endX && currentY <= baseY && currentY >= endY){
-        return true;
-    } 
-    // Check shapres created in DOWN left motion
-    else if (currentX <= baseX && currentX >= endX && currentY >= baseY && currentY <= endY){
-        return true;
-    }
-    
-    return false;
+Rectangle.prototype.hitTest = function (currentX, currentY) {
+	var baseX = this.baseX;
+	var baseY = this.baseY;
+	var endX = this.endX;
+	var endY = this.endY;
+
+	// Check shapes that are created in UP Left motion
+	if (currentX <= baseX && currentX >= endX && currentY <= baseY && currentY >= endY) {
+		return true;
+	}
+	// Check shapes that are created in Down right motion
+	else if (currentX >= baseX && currentX <= endX && currentY >= baseY && currentY <= endY) {
+		return true;
+	}
+
+	// Check shapes created in TOP right motion
+	else if (currentX >= baseX && currentX <= endX && currentY <= baseY && currentY >= endY) {
+		return true;
+	}
+	// Check shapres created in DOWN left motion
+	else if (currentX <= baseX && currentX >= endX && currentY >= baseY && currentY <= endY) {
+		return true;
+	}
+
+	return false;
 };
 
 
-function Circle(x, y, fillColor, lineColor, lineThickness, myRadius){
-    Shape.call(this, x, y, fillColor, lineColor, lineThickness);
-    var radius = myRadius;
+function Circle(x, y, fillColor, lineColor, lineThickness, myRadius) {
+	Shape.call(this, x, y, fillColor, lineColor, lineThickness);
+	var radius = myRadius;
 }
 
 Circle.prototype = new Shape();
 Circle.prototype.constructor = Circle;
-Circle.prototype.draw = function() {
-    context.beginPath();
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.translate(this.baseX, this.baseY);
-    
-    this.radius = Math.sqrt(Math.pow(this.endX-this.baseX, 2) + Math.pow(this.endY-this.baseY, 2));
-    
-    context.arc(0, 0, this.radius, 0, Math.PI*2);
-    context.fillStyle= this.fillColor;
-    context.strokeStyle = this.lineColor;
-    context.lineWidth = this.lineThickness;
-    context.fill();
-    context.stroke();
-    context.closePath();
+Circle.prototype.draw = function () {
+	context.beginPath();
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.translate(this.baseX, this.baseY);
+
+	this.radius = Math.sqrt(Math.pow(this.endX - this.baseX, 2) + Math.pow(this.endY - this.baseY, 2));
+
+	context.arc(0, 0, this.radius, 0, Math.PI * 2);
+	context.fillStyle = this.fillColor;
+	context.strokeStyle = this.lineColor;
+	context.lineWidth = this.lineThickness;
+	context.fill();
+	context.stroke();
+	context.closePath();
 }
-Circle.prototype.setRadius =  function(radius) {this.radius = radius;}
-Circle.prototype.getRadius =  function() {return this.radius;}
-Circle.prototype.hitTest = function(testX,testY) {
-    var distanceFromCenter = Math.sqrt(Math.pow(this.baseX - testX, 2) + Math.pow(this.baseY - testY, 2));
-    if (distanceFromCenter <= this.radius) {
-        return true;
-    }
-    return false;
+Circle.prototype.setRadius = function (radius) {
+	this.radius = radius;
+}
+Circle.prototype.getRadius = function () {
+	return this.radius;
+}
+Circle.prototype.hitTest = function (testX, testY) {
+	var distanceFromCenter = Math.sqrt(Math.pow(this.baseX - testX, 2) + Math.pow(this.baseY - testY, 2));
+	if (distanceFromCenter <= this.radius) {
+		return true;
+	}
+	return false;
 };
 
 /**
@@ -245,63 +262,91 @@ Circle.prototype.hitTest = function(testX,testY) {
  * select a
  * @param shapeID
  */
-function setSelectedTool(shapeID){
-    if (currentSelectedTool == shapeID)
-        currentSelectedTool = null;
-    else
-        currentSelectedTool = shapeID;
-    document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
+function setSelectedTool(shapeID) {
+	if (currentSelectedTool == shapeID) currentSelectedTool = null;
+	else currentSelectedTool = shapeID;
+	document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
 }
 
 /*
  * Note: this should be binded to elements with Jquery, for now just use html
  */
 function commandCanvas(command) {
-    switch (command){
-    case CLEAR:
-        context.save();
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        // Will always clear the right space
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.restore();
-        
-        setSelectedTool(null);
-        currentSelectedShape = null;
-        
-        shapes = []; // er...
-        break;
-    case SAVE:
-        var dataURL = canvas.toDataURL();
-        alert("THIS IS THE ENCODED PNG: \n" + dataURL);
-        break;
+	switch (command) {
+	case CLEAR:
+		context.save();
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		// Will always clear the right space
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		context.restore();
+
+		setSelectedTool(null);
+		currentSelectedShape = null;
+
+		shapes = []; // er...
+		break;
+	case SAVE:
+		var dataURL = canvas.toDataURL();
+		alert("THIS IS THE ENCODED PNG: \n" + dataURL);
+		break;
 	case DELETE:
-		  removeShapeFromArray(currentSelectedShape);
-		  renderShapes();
-    }
+		removeShapeFromArray(currentSelectedShape);
+		renderShapes();
+		break;
+	case COPY_PASTE:
+		var copyPasteButton = document.getElementById(COPY_PASTE);
+		if (currentSelectedShape != null) {
+			if (copyPasteButton.innerHTML == "Copy") {
+				copyPasteButton.innerHTML = "Paste";
+				if (currentSelectedShape instanceof Circle) {
+					currentCopiedShape = new Circle;
+					currentCopiedShape.radius = currentSelectedShape.radius;
+				} else if (currentSelectedShape instanceof Rectangle) {
+					currentCopiedShape = new Rectangle;
+				} else if (currentSelectedShape instanceof Line) {
+					currentCopiedShape = new Line;
+				}
+				// Currently broken for rectangle (possibly line too).
+				// Some propery of rectangle is not being set, so it is breaking. 
+ 				// Works for circle.			
+			
+				currentCopiedShape.baseX = currentSelectedShape.baseX;
+				currentCopiedShape.baseY = currentSelectedShape.baseY;
+				currentCopiedShape.fillColor = currentSelectedShape.fillColor;
+				currentCopiedShape.lineColor = currentSelectedShape.lineColor;
+				currentCopiedShape.lineThickness = currentSelectedShape.lineThickness;
+				currentCopiedShape.endX = currentSelectedShape.endX;
+				currentCopiedShape.endY = currentSelectedShape.endY;
+				
+			} else if (copyPasteButton.innerHTML == "Paste") {
+				copyPasteButton.innerHTML = "Copy";
+				currentlyCopiedShape = null;
+			}
+		}
+	}
 }
 
 // Get the mouse coordinates with respect to the canvas
 function updateMouseCoordinates(event) {
-    // Paranoid check
-    if (event == null && canvas == null)
-        return null;
-    
-    var coordinates = document.getElementById("coords");
+	// Paranoid check
+	if (event == null && canvas == null) return null;
 
-    // With respect to the canvas
-    var x = event.pageX - canvas.offsetLeft;
-    var y = event.pageY - canvas.offsetTop;
+	var coordinates = document.getElementById("coords");
 
-    // Display for now
-    coordinates.innerHTML = " (" + x + ", " + y + ")";
+	// With respect to the canvas
+	var x = event.pageX - canvas.offsetLeft;
+	var y = event.pageY - canvas.offsetTop;
 
-    return [ x, y ];
+	// Display for now
+	coordinates.innerHTML = " (" + x + ", " + y + ")";
+
+	return [x, y];
 }
 
-function finishShape(event){
-    //context.clearRect(0, 0, canvas.width, canvas.height);
-    currentsetDraw = null;
-    currentSelectedHandle = false; 
+function finishShape(event) {
+	//context.clearRect(0, 0, canvas.width, canvas.height);
+	currentsetDraw = null;
+	currentSelectedHandle = false;
 }
 
 /**
@@ -311,38 +356,38 @@ function finishShape(event){
  * - Modify the attributes of the shape and then redraw them 
  * - More comments to be added
  */
-function modifyShapes(event){
+function modifyShapes(event) {
 
-    // If we are currently moving the mouse to draw the shape:
-    if (currentsetDraw != null){
-        var coordinates = updateMouseCoordinates(event);
-        // Use the dragging functionality here to set the endpoints
-        var shapePosition = currentsetDraw.getBaseCoordinates();
-        currentsetDraw.endX = coordinates[0];
-        currentsetDraw.endY = coordinates[1];
-        renderShapes();
-    }
-    // If we are trying to move a select Handle
-    else if (currentSelectedHandle){
-        var coordinates = updateMouseCoordinates(event);
-        // Use the dragging functionality here to set the endpoints
-        selectionHandlerResize(coordinates);
-        renderShapes();
-        
-    }
-    // If we are trying to move the object without the select handle
-    // Usually for translation
-    // Or if we modifying an exsiting shape
-    else if (currentSelectedShape != null){
-        var coordinates = updateMouseCoordinates(event);
-        var baseCoordinates = currentSelectedShape.getBaseCoordinates();
-        var dimentions = currentSelectedShape.getDimension();
-        var savedDimensions = [dimentions[0] - baseCoordinates[0], dimentions[1] - baseCoordinates[1]]
-        currentSelectedShape.setBaseCoordinates(coordinates[0] - mouseOffset[0], coordinates[1]- mouseOffset[1]);
-        currentSelectedShape.setDimension(coordinates[0] - mouseOffset[0] + savedDimensions[0],coordinates[1]- mouseOffset[1] + savedDimensions[1]);
+	// If we are currently moving the mouse to draw the shape:
+	if (currentsetDraw != null) {
+		var coordinates = updateMouseCoordinates(event);
+		// Use the dragging functionality here to set the endpoints
+		var shapePosition = currentsetDraw.getBaseCoordinates();
+		currentsetDraw.endX = coordinates[0];
+		currentsetDraw.endY = coordinates[1];
+		renderShapes();
+	}
+	// If we are trying to move a select Handle
+	else if (currentSelectedHandle) {
+		var coordinates = updateMouseCoordinates(event);
+		// Use the dragging functionality here to set the endpoints
+		selectionHandlerResize(coordinates);
+		renderShapes();
 
-        renderShapes();
-    }
+	}
+	// If we are trying to move the object without the select handle
+	// Usually for translation
+	// Or if we modifying an exsiting shape
+	else if (currentSelectedShape != null) {
+		var coordinates = updateMouseCoordinates(event);
+		var baseCoordinates = currentSelectedShape.getBaseCoordinates();
+		var dimentions = currentSelectedShape.getDimension();
+		var savedDimensions = [dimentions[0] - baseCoordinates[0], dimentions[1] - baseCoordinates[1]]
+		currentSelectedShape.setBaseCoordinates(coordinates[0] - mouseOffset[0], coordinates[1] - mouseOffset[1]);
+		currentSelectedShape.setDimension(coordinates[0] - mouseOffset[0] + savedDimensions[0], coordinates[1] - mouseOffset[1] + savedDimensions[1]);
+
+		renderShapes();
+	}
 }
 
 /*
@@ -350,133 +395,137 @@ function modifyShapes(event){
  * If there is no currently selected shape (not drawing), we 
  * are then trying to select shapes - do hit test.
  */
-function addShape(event){
-    var coordinates = updateMouseCoordinates(event);
-    // First we add the shape
-    var drawShape = null;
-    
-    // HitTestwill Render itself
-    if (currentSelectedTool == null){
-        hitTest(coordinates);
-    }
-    else{
-        switch (currentSelectedTool){
-            case RECTANGLE:
-                drawShape = new Rectangle(coordinates, currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness);
-                break;
-            case CIRCLE:
-                drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness, 0);
-                break;
-            case LINE:
-                drawShape = new Line(coordinates, currentSelectedOutlineColor, currentlySelectedLineThickness);
-                break;
-        }
-        if (drawShape!= null){
-            shapes.push(drawShape);
-            currentsetDraw = drawShape;
-        }
-    }
-    renderShapes();
+function addShape(event) {
+	var coordinates = updateMouseCoordinates(event);
+	// First we add the shape
+	var drawShape = null;
+
+	// HitTestwill Render itself
+	if (currentSelectedTool == null) {
+		hitTest(coordinates);
+	} else {
+		switch (currentSelectedTool) {
+		case RECTANGLE:
+			drawShape = new Rectangle(coordinates, currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness);
+			break;
+		case CIRCLE:
+			drawShape = new Circle(coordinates[0], coordinates[1], currentSelectedFillColor, currentSelectedOutlineColor, currentlySelectedLineThickness, 0);
+			break;
+		case LINE:
+			drawShape = new Line(coordinates, currentSelectedOutlineColor, currentlySelectedLineThickness);
+			break;
+		}
+		if (drawShape != null) {
+			shapes.push(drawShape);
+			currentsetDraw = drawShape;
+		}
+	}
+	renderShapes();
 }
 
 function hitTest(coordinates) {
-    // Reset the current selected shape
-    var selectedHighest = false;
-    var selectedHandles = false;
-    
-    // We have selected an object, increase outline of shape to
-    // simulate focus, and turn selectionHandle on for the current shape.
-    if (currentSelectedShape != null){
-        for (var i = 0; i < mainSelectionHandles.length; i ++){
-            if (mainSelectionHandles[i].hitTest(coordinates[0], coordinates[1])){
-                mainSelectedHandle = i;
-                currentSelectedHandle = true; 
-                selectedHandles = true;
-            }
-        }
-    } 
-    
-    // If not yet selected object, run hitTest to see if user
-    // Is trying to select object
-    // Done backwards to selected the highest object (i.e. two objects overlapping)
-    else if (!selectedHandles){
-        for ( var i = shapes.length - 1; i >= 0; i--) {
-            var shape = shapes[i];
-            
-            if (shape.hitTest(coordinates[0], coordinates[1]) && !selectedHighest) {
-                shape.setSelected(true);
-                currentSelectedShape = shape;
-                selectedHighest = true;
-                var shapeCoord = currentSelectedShape.getBaseCoordinates();
-                mouseOffset = [coordinates[0] - shapeCoord[0], coordinates[1] - shapeCoord[1]];
-                
-                // return;  // Need to de selected unfocus shapes shapes
-                } else{
-                    shape.setSelected(false);
-                }
-        }
-    }
-    
-    // We clicked, and we hitTest did not see any objects
-    // User is not selecting anything.
-    if (!selectedHighest && !selectedHandles){
-        currentSelectedShape = null;
-    }
+	// Reset the current selected shape
+	var selectedHighest = false;
+	var selectedHandles = false;
+
+	// We have selected an object, increase outline of shape to
+	// simulate focus, and turn selectionHandle on for the current shape.
+	if (currentSelectedShape != null) {
+		for (var i = 0; i < mainSelectionHandles.length; i++) {
+			if (mainSelectionHandles[i].hitTest(coordinates[0], coordinates[1])) {
+				mainSelectedHandle = i;
+				currentSelectedHandle = true;
+				selectedHandles = true;
+			}
+		}
+	}
+
+	// If not yet selected object, run hitTest to see if user
+	// Is trying to select object
+	// Done backwards to selected the highest object (i.e. two objects overlapping)
+	else if (!selectedHandles) {
+		for (var i = shapes.length - 1; i >= 0; i--) {
+			var shape = shapes[i];
+
+			if (shape.hitTest(coordinates[0], coordinates[1]) && !selectedHighest) {
+				shape.setSelected(true);
+				currentSelectedShape = shape;
+				
+				var toShow = [(shape instanceof Rectangle), (shape instanceof Circle), (shape instanceof Line)];
+				
+				showPallets(toShow[0], toShow[1], toShow[2]);
+			
+				selectedHighest = true;
+				var shapeCoord = currentSelectedShape.getBaseCoordinates();
+				mouseOffset = [coordinates[0] - shapeCoord[0], coordinates[1] - shapeCoord[1]];
+				// TODO Need to de selected unfocus shapes shapes
+				// return;  				
+			} else {
+				shape.setSelected(false);
+			}
+		}
+	}
+
+	// We clicked, and we hitTest did not see any objects
+	// User is not selecting anything.
+	if (!selectedHighest && !selectedHandles) {
+		currentSelectedShape = null;
+	}
 }
 
-function renderShapes(){
-    // First we need reset the page
-    context.save();
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    // Will always clear the right space
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.restore();
+function renderShapes() {
+	// First we need reset the page
+	context.save();
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	// Will always clear the right space
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	context.restore();
 
-    for (var i = 0; i < shapes.length; i ++){
-        shapes[i].draw();
-        selectionHandlerRender(shapes[i]);
-    }
+	for (var i = 0; i < shapes.length; i++) {
+		shapes[i].draw();
+		selectionHandlerRender(shapes[i]);
+	}
 }
 
 /**
  * Surround current shape with selectionHandler Square Nodes
  * @param shape
  */
-function selectionHandlerRender(shape){
-    if (shape.isSelected()){
-        // After main shapes are rendered
-        // We now draw the selection box on top of the shape
-            var rad = 0; // HTML5 Circle's 0,0 system is different from rect.
-            var radHacks = 1;
-            
-            var x_length = shape.endX - shape.baseX;
-            var y_length = shape.endY - shape.baseY;
-            if (shape.radius){
-                rad = shape.radius;
-                radHacks = 0.5;
-                x_length = rad;
-                y_length = rad;
-            }
-            var iHandle = 0;
-            for ( var h = 0; h < 3; h++) {
-                for ( var w = 0; w < 3; w++) {
-                    // Not drawing middle selection handle
-                    if (!(w == 1 && h == 1)) {
-								var block_x = shape.baseX + (w * x_length / (2* radHacks)) - rad;
-                        var block_y = shape.baseY + (h * y_length / (2* radHacks)) - rad;								
+function selectionHandlerRender(shape) {
+	if (shape.isSelected()) {
+		// After main shapes are rendered
+		// We now draw the selection box on top of the shape
+		var rad = 0; // HTML5 Circle's 0,0 system is different from rect.
+		var radHacks = 1;
 
-                        /*mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
+		var x_length = shape.endX - shape.baseX;
+		var y_length = shape.endY - shape.baseY;
+		if (shape.radius) {
+			rad = shape.radius;
+			radHacks = 0.5;
+			x_length = rad;
+			y_length = rad;
+		}
+		var iHandle = 0;
+		for (var h = 0; h < 3; h++) {
+			for (var w = 0; w < 3; w++) {
+				// Not drawing middle selection handle
+				if (!(w == 1 && h == 1)) {
+					var block_x = shape.baseX + (w * x_length / (2 * radHacks)) - rad;
+					var block_y = shape.baseY + (h * y_length / (2 * radHacks)) - rad;
+
+					/*mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
                                 + (w * x_length / (2* radHacks)) - rad, shape.y
                                 + (h * y_length / (2* radHacks)) - rad);*/
-                        mainSelectionHandles[iHandle].setBaseCoordinates(block_x, block_y);
-                        mainSelectionHandles[iHandle].setDimension(block_x + mySelBoxSize, block_y + mySelBoxSize);
-                        
-                        mainSelectionHandles[iHandle].draw();
-                        iHandle++;
-                    }
-                }
-            }
-    }
+					mainSelectionHandles[iHandle].setBaseCoordinates(block_x, block_y);
+					mainSelectionHandles[iHandle].setDimension(block_x + mySelBoxSize, block_y + mySelBoxSize);
+
+					mainSelectionHandles[iHandle].draw();
+					iHandle++;
+				}
+			}
+		}
+	}
 }
 
 /*
@@ -499,47 +548,47 @@ function selectionHandlerRender(shape){
  *  6 - Modify dimensionY
  *  7 - Modify dimensionX and dimensionY
  */
-function selectionHandlerResize(mouseCoord){
-    var currentDimensions = currentSelectedShape.getDimension();
-    var shapeBaseCoord = currentSelectedShape.getBaseCoordinates();
-    switch (mainSelectedHandle){
-    case 0:
-        currentSelectedShape.setBaseCoordinates(mouseCoord[0], mouseCoord[1]);
-        break;
-    case 1:
-            currentSelectedShape.setBaseCoordinates(shapeBaseCoord[0], mouseCoord[1]);
-        break;
-    case 2:
-        currentSelectedShape.setBaseCoordinates(shapeBaseCoord[0], mouseCoord[1]);
-        currentSelectedShape.setDimension(mouseCoord[0], currentDimensions[1]);
-        break;
-    case 3:
-            currentSelectedShape.setBaseCoordinates(mouseCoord[0], shapeBaseCoord[1]);
-        break;
-    case 4:
-            currentSelectedShape.setDimension(mouseCoord[0], currentDimensions[1]);
-        break;
-    case 5:
-        currentSelectedShape.setBaseCoordinates(mouseCoord[0], shapeBaseCoord[1]);
-        currentSelectedShape.setDimension(currentDimensions[0], mouseCoord[1]);
-        break;
-    case 6:
-            currentSelectedShape.setDimension(currentDimensions[0], mouseCoord[1]);
-        break;
-    case 7:
-        currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
+function selectionHandlerResize(mouseCoord) {
+	var currentDimensions = currentSelectedShape.getDimension();
+	var shapeBaseCoord = currentSelectedShape.getBaseCoordinates();
+	switch (mainSelectedHandle) {
+	case 0:
+		currentSelectedShape.setBaseCoordinates(mouseCoord[0], mouseCoord[1]);
+		break;
+	case 1:
+		currentSelectedShape.setBaseCoordinates(shapeBaseCoord[0], mouseCoord[1]);
+		break;
+	case 2:
+		currentSelectedShape.setBaseCoordinates(shapeBaseCoord[0], mouseCoord[1]);
+		currentSelectedShape.setDimension(mouseCoord[0], currentDimensions[1]);
+		break;
+	case 3:
+		currentSelectedShape.setBaseCoordinates(mouseCoord[0], shapeBaseCoord[1]);
+		break;
+	case 4:
+		currentSelectedShape.setDimension(mouseCoord[0], currentDimensions[1]);
+		break;
+	case 5:
+		currentSelectedShape.setBaseCoordinates(mouseCoord[0], shapeBaseCoord[1]);
+		currentSelectedShape.setDimension(currentDimensions[0], mouseCoord[1]);
+		break;
+	case 6:
+		currentSelectedShape.setDimension(currentDimensions[0], mouseCoord[1]);
+		break;
+	case 7:
+		currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
 
-        break;
-    }
+		break;
+	}
 }
 
-function removeShapeFromArray(shape){
-	if (shape != null) {				
-		
+function removeShapeFromArray(shape) {
+	if (shape != null) {
+
 		// Done in reverse because it is more likely that the shape will be stacked on another.
 		// (i.e. more effiecient) 
-		for (var i = shapes.length - 1; i >= 0; i--){
-			if (shape === shapes[i]){
+		for (var i = shapes.length - 1; i >= 0; i--) {
+			if (shape === shapes[i]) {
 				shapes.splice(i, 1);
 				break;
 			}
@@ -548,30 +597,30 @@ function removeShapeFromArray(shape){
 }
 
 function setColor(color) {
-    if (fillColorSelected){
-        currentSelectedFillColor = color;
-        document.getElementById("curColor").innerHTML = "Color: " + color;
-    } else if (lineColorSelected){
-        currentSelectedOutlineColor = color;
-    }
+	if (fillColorSelected) {
+		currentSelectedFillColor = color;
+		document.getElementById("curColor").innerHTML = "Color: " + color;
+	} else if (lineColorSelected) {
+		currentSelectedOutlineColor = color;
+	}
 }
 
-function setLineThickeness(thickness){
-    currentlySelectedLineThickness = thickness;
-    document.getElementById("thickDisp").innerHTML = "Thickness: " + thickness;
+function setLineThickeness(thickness) {
+	currentlySelectedLineThickness = thickness;
+	document.getElementById("thickDisp").innerHTML = "Thickness: " + thickness;
 }
 
-function setColorSelector(type){
-    if (type == FILLCOLOR){
-        fillColorSelected = true;
-        lineColorSelected = false;
-        $("#fillColorSelector").css("font-weight", "900");
-        $("#lineColorSelector").css("font-weight", "normal");
-    
-    } else if (type == LINECOLOR){
-        fillColorSelected = false;
-        lineColorSelected = true;
-        $("#fillColorSelector").css("font-weight", "normal");
-        $("#lineColorSelector").css("font-weight", "900");
-    }
+function setColorSelector(type) {
+	if (type == FILLCOLOR) {
+		fillColorSelected = true;
+		lineColorSelected = false;
+		$("#fillColorSelector").css("font-weight", "900");
+		$("#lineColorSelector").css("font-weight", "normal");
+
+	} else if (type == LINECOLOR) {
+		fillColorSelected = false;
+		lineColorSelected = true;
+		$("#fillColorSelector").css("font-weight", "normal");
+		$("#lineColorSelector").css("font-weight", "900");
+	}
 }
