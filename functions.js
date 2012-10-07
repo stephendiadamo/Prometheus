@@ -48,6 +48,7 @@ $(document).ready(function () {
 	$('#drawingCanvas').mousedown(function (e) {
 		mouseDown = true;
 		addShape(e);
+		console.log("TADA");
 	});
 
 	$('#drawingCanvas').mouseup(function (e) {
@@ -255,6 +256,51 @@ Circle.prototype.hitTest = function (testX, testY) {
 	return false;
 };
 
+// Override resizing functino with selection handles as the
+// base_x and base_y are differe
+Circle.prototype.selectionHandlerResize = function (mouseCoord) {
+    // If there is no current selection handles
+    if (mainSelectionHandles == null){
+        return;
+    }
+    /* Selection Rectangle is as follows:
+        *  0 1 2 
+        *  3   4
+        *  5 6 7 
+    */
+    var currentDim = currentSelectedShape.getDimension();
+    var currentRad = currentSelectedShape.getRadius();
+    switch (mainSelectedHandle) {
+    case 0:
+        currentSelectedShape.setDimension(mouseCoord[0] + currentRad, mouseCoord[1]);
+        break;
+    case 1:
+        currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
+        break;
+    case 2:
+        currentSelectedShape.setDimension(mouseCoord[0] - currentRad, mouseCoord[1]);
+
+        break;
+    case 3:
+        currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
+        break;
+    case 4:
+        currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
+        break;
+    case 5:
+        currentSelectedShape.setDimension(mouseCoord[0] + currentRad, mouseCoord[1]);
+
+        break;
+    case 6:
+        currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
+        break;
+    case 7:
+        currentSelectedShape.setDimension(mouseCoord[0] - currentRad, mouseCoord[1]);
+
+        break;
+    }
+
+}
 /**
  * Set selected used to enable or disable current drawing shape
  * Note: This is needed to differentiate drawing mode and selecting mode (both use click events)
@@ -371,7 +417,7 @@ function modifyShapes(event) {
 	else if (currentSelectedHandle) {
 		var coordinates = updateMouseCoordinates(event);
 		// Use the dragging functionality here to set the endpoints
-		selectionHandlerResize(coordinates);
+		currentSelectedShape.selectionHandlerResize(coordinates);
 		renderShapes();
 
 	}
@@ -424,53 +470,61 @@ function addShape(event) {
 }
 
 function hitTest(coordinates) {
-	// Reset the current selected shape
-	var selectedHighest = false;
-	var selectedHandles = false;
-
-	// We have selected an object, increase outline of shape to
-	// simulate focus, and turn selectionHandle on for the current shape.
-	if (currentSelectedShape != null) {
-		for (var i = 0; i < mainSelectionHandles.length; i++) {
-			if (mainSelectionHandles[i].hitTest(coordinates[0], coordinates[1])) {
-				mainSelectedHandle = i;
-				currentSelectedHandle = true;
-				selectedHandles = true;
-			}
-		}
-	}
-
-	// If not yet selected object, run hitTest to see if user
-	// Is trying to select object
-	// Done backwards to selected the highest object (i.e. two objects overlapping)
-	else if (!selectedHandles) {
-		for (var i = shapes.length - 1; i >= 0; i--) {
-			var shape = shapes[i];
-
-			if (shape.hitTest(coordinates[0], coordinates[1]) && !selectedHighest) {
-				shape.setSelected(true);
-				currentSelectedShape = shape;
-				
-				var toShow = [(shape instanceof Rectangle), (shape instanceof Circle), (shape instanceof Line)];
-				
-				showPallets(toShow[0], toShow[1], toShow[2]);
-			
-				selectedHighest = true;
-				var shapeCoord = currentSelectedShape.getBaseCoordinates();
-				mouseOffset = [coordinates[0] - shapeCoord[0], coordinates[1] - shapeCoord[1]];
-				// TODO Need to de selected unfocus shapes shapes
-				// return;  				
-			} else {
-				shape.setSelected(false);
-			}
-		}
-	}
-
-	// We clicked, and we hitTest did not see any objects
-	// User is not selecting anything.
-	if (!selectedHighest && !selectedHandles) {
-		currentSelectedShape = null;
-	}
+    // Reset the current selected shape
+    var selectedHighest = false;
+    // var selectedHandles = false;
+    
+    // We have selected an object, increase outline of shape to
+    // simulate focus, and turn selectionHandle on for the current shape.
+    if (currentSelectedShape != null) {
+        for ( var i = 0; i < mainSelectionHandles.length; i++) {
+            if (mainSelectionHandles[i].hitTest(coordinates[0], coordinates[1])) {
+                mainSelectedHandle = i;
+                currentSelectedHandle = true;
+                // selectedHandles = true;
+                return;
+            }
+        }
+        
+        // If we failed to select the selected Handles
+    }
+    
+    // Have not yet selected shape, perform hit test on all shapes
+    for ( var i = shapes.length - 1; i >= 0; i--) {
+        var shape = shapes[i];
+        
+        if (shape.hitTest(coordinates[0], coordinates[1]) && !selectedHighest) {
+            // Flag to be highlighted
+            shape.setSelected(true);
+            
+            // Set the current shape global var
+            currentSelectedShape = shape;
+            
+            // Expand pallets used to modify current selected shape
+            var toShow = [ (shape instanceof Rectangle),
+                    (shape instanceof Circle), (shape instanceof Line) ];
+            
+            showPallets(toShow[0], toShow[1], toShow[2]);
+            
+            // We have already selected the highest shape therefore
+            // do not hit test on shapes beneath this
+            selectedHighest = true;
+            var shapeCoord = currentSelectedShape.getBaseCoordinates();
+            
+            // Mouse Offset for drag and drop
+            mouseOffset = [ coordinates[0] - shapeCoord[0], coordinates[1] - shapeCoord[1] ];
+            
+        } else {
+            shapes[i].setSelected(false);
+        }
+    }
+    
+    // If hit detection has not selected anything
+    // close all pallets, set currentselectedshape to null
+    if (!selectedHighest) {
+        hidePallets(true, true, true);
+        currentSelectedShape = null;
+    }
 }
 
 function renderShapes() {
@@ -483,49 +537,58 @@ function renderShapes() {
 
 	for (var i = 0; i < shapes.length; i++) {
 		shapes[i].draw();
-		selectionHandlerRender(shapes[i]);
+		shapes[i].selectionHandlerRender(shapes[i]);
 	}
 }
 
 /**
  * Surround current shape with selectionHandler Square Nodes
+ * 
  * @param shape
  */
-function selectionHandlerRender(shape) {
-	if (shape.isSelected()) {
-		// After main shapes are rendered
-		// We now draw the selection box on top of the shape
-		var rad = 0; // HTML5 Circle's 0,0 system is different from rect.
-		var radHacks = 1;
-
-		var x_length = shape.endX - shape.baseX;
-		var y_length = shape.endY - shape.baseY;
-		if (shape.radius) {
-			rad = shape.radius;
-			radHacks = 0.5;
-			x_length = rad;
-			y_length = rad;
-		}
-		var iHandle = 0;
-		for (var h = 0; h < 3; h++) {
-			for (var w = 0; w < 3; w++) {
-				// Not drawing middle selection handle
-				if (!(w == 1 && h == 1)) {
-					var block_x = shape.baseX + (w * x_length / (2 * radHacks)) - rad;
-					var block_y = shape.baseY + (h * y_length / (2 * radHacks)) - rad;
-
-					/*mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
-                                + (w * x_length / (2* radHacks)) - rad, shape.y
-                                + (h * y_length / (2* radHacks)) - rad);*/
-					mainSelectionHandles[iHandle].setBaseCoordinates(block_x, block_y);
-					mainSelectionHandles[iHandle].setDimension(block_x + mySelBoxSize, block_y + mySelBoxSize);
-
-					mainSelectionHandles[iHandle].draw();
-					iHandle++;
-				}
-			}
-		}
-	}
+Shape.prototype.selectionHandlerRender = function(shape) {
+    // If currently there isn't any instantiate selection handles
+    if (mainSelectionHandles == null)
+        return;
+    
+    if (shape.isSelected()) {
+        // After main shapes are rendered
+        // We now draw the selection box on top of the shape
+        var rad = 0; // HTML5 Circle's 0,0 system is different from rect.
+        var radHacks = 1;
+        
+        var x_length = shape.endX - shape.baseX;
+        var y_length = shape.endY - shape.baseY;
+        if (shape.radius) {
+            rad = shape.radius;
+            radHacks = 0.5;
+            x_length = rad;
+            y_length = rad;
+        }
+        var iHandle = 0;
+        for ( var h = 0; h < 3; h++) {
+            for ( var w = 0; w < 3; w++) {
+                // Not drawing middle selection handle
+                if (!(w == 1 && h == 1)) {
+                    var block_x = shape.baseX + (w * x_length / (2 * radHacks))- rad;
+                    var block_y = shape.baseY + (h * y_length / (2 * radHacks))- rad;
+                    
+                    /*
+                     * mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
+                     * + (w * x_length / (2* radHacks)) - rad, shape.y 
+                     * + (h * y_length / (2* radHacks)) - rad);
+                     */
+                    mainSelectionHandles[iHandle].setBaseCoordinates(block_x,
+                            block_y);
+                    mainSelectionHandles[iHandle].setDimension(block_x
+                            + mySelBoxSize, block_y + mySelBoxSize);
+                    
+                    mainSelectionHandles[iHandle].draw();
+                    iHandle++;
+                }
+            }
+        }
+    }
 }
 
 /*
@@ -548,9 +611,17 @@ function selectionHandlerRender(shape) {
  *  6 - Modify dimensionY
  *  7 - Modify dimensionX and dimensionY
  */
-function selectionHandlerResize(mouseCoord) {
+Shape.prototype.selectionHandlerResize = function (mouseCoord) {
+    // If there is no current selection handles
+    if (mainSelectionHandles == null){
+        return;
+    }
 	var currentDimensions = currentSelectedShape.getDimension();
 	var shapeBaseCoord = currentSelectedShape.getBaseCoordinates();
+	
+	// If we are a circle then we just need to resize the Radius
+	// The base coordinate does not move. 
+	
 	switch (mainSelectedHandle) {
 	case 0:
 		currentSelectedShape.setBaseCoordinates(mouseCoord[0], mouseCoord[1]);
