@@ -155,6 +155,82 @@ Line.prototype.draw = function () {
 
 Line.prototype.hitTest = function (testX, testY) {
 	// Need to think of logic to implement this
+    
+    console.log("TEST finding" + testX + " | " +  testY);
+    var lineThickness = this.lineThickness + 10;
+
+    // Utillize Y = mx + b
+    // Say Y1 and X1 is the base
+    // Say Y2 and X2 is the end point
+    x1 = this.baseX;
+    y1 = this.baseY;
+    x2 = this.endX;
+    y2 = this.endY;
+    
+    // If completely vertical
+    if ((x2 - x1) == 0){
+        if (testY > y1 + lineThickness &&
+                testY < y2 + lineThickness && 
+                testX > x1 - lineThickness &&
+                testX < x1 + lineThickness){
+            return true;
+        }
+        return false;
+    }
+       
+    
+    
+    // If completely horizontal
+    if (y2 - y1 == 0){
+        if (testX > x1 + lineThickness &&
+                testX < x2 + lineThickness && 
+                testY > y1 - lineThickness &&
+                testY < y1 + lineThickness){
+            return true;
+        }
+        return false;
+    }
+    
+    // If completely vertical y2 - y1 will be 0 
+    
+    var m = (y2 - y1) / (x2 - x1);
+
+    
+    var b = y2 - (x2*m);
+    
+    var height = Math.abs(y2 - y1);
+    var wideth = Math.abs(x2 - x1);
+    var errorRate = 4;
+
+    /*
+     * Algorithm for finding lines.
+     * Knowing the current x and Y mouse click value, we use the mouseY and substitute
+     * it into the line equation for the current focus line we are checking on.
+     * We check for a range of Numbers around our MouseY
+     * [ mouseY - range << currentY << mouseY + range ]
+     * 
+     * We then iterate this range over the current line function to get line_X
+     * As such: mouseY = line_X*m + b;
+     * Therefore isolating line_X gives: line_X = (mouseY -b )/m
+     * 
+     * Then if the point line_X is outside the start_X and end_X of the given line
+     * - No hit.
+     * 
+     * If the point is on the given line, check if that line_X on the line is close
+     * to our testX, within a accuracy of lineThickness, and if so
+     * - Hit.
+     * 
+     */
+    for (currentY = testY - errorRate ; currentY < testY + errorRate ; currentY ++){
+        currentX = (currentY-b)/m;
+        if (currentX < x1 - lineThickness || currentX > x2 + lineThickness){
+            return false;
+        }
+        if (testX > (currentX - lineThickness) && testX < (currentX + lineThickness)){
+            return true;
+        }
+    }
+        
 	return false;
 };
 
