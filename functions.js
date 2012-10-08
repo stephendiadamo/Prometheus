@@ -94,6 +94,17 @@ function Shape(x, y, fillColor, lineColor, lineThickness) {
 	// this.rotate = 0.0;
 
 }
+Shape.prototype.setFillColor = function (newColor){
+    this.fillColor = newColor;
+}
+
+Shape.prototype.setLineColor = function (newLineColor){
+    this.lineColor = newLineColor;
+}
+
+Shape.prototype.setLineThickness = function (newLineThickness){
+    this.lineThickness = newLineThickness;
+}
 
 Shape.prototype.setDimension = function (dimX, dimY) {
 	this.endX = dimX;
@@ -385,8 +396,27 @@ Circle.prototype.selectionHandlerResize = function (mouseCoord) {
  * @param shapeID
  */
 function setSelectedTool(shapeID) {
-	if (currentSelectedTool == shapeID) currentSelectedTool = null;
-	else currentSelectedTool = shapeID;
+	if (currentSelectedTool == shapeID) {
+	    currentSelectedTool = null;
+        hidePallets(true, true, true);
+
+	    }
+	else {
+	    // Immediately deselect currently selected shape
+	    // Go into drawing mode
+	    if (currentSelectedShape != null){
+	        currentSelectedShape.setSelected(false);
+	    }
+	    currentSelectedShape = null;
+	    currentSelectedHandle = false;
+	    currentSelectedTool = shapeID;
+        // Expand pallets used to modify current selected shape
+        var toShow = [ (shapeID == RECTANGLE),
+                (shapeID == CIRCLE), (shapeID == LINE) ];
+        
+        showPallets(toShow[0], toShow[1], toShow[2]);
+	}
+	renderShapes();
 	document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
 }
 
@@ -744,17 +774,36 @@ function removeShapeFromArray(shape) {
 }
 
 function setColor(color) {
-	if (fillColorSelected) {
-		currentSelectedFillColor = color;
-		document.getElementById("curColor").innerHTML = "Color: " + color;
-	} else if (lineColorSelected) {
-		currentSelectedOutlineColor = color;
-	}
+    if (fillColorSelected) {
+        currentSelectedFillColor = color;
+        document.getElementById("curColor").innerHTML = "Color: " + color;
+    } else if (lineColorSelected) {
+        currentSelectedOutlineColor = color;
+    }
+    
+    // If user selects the shape and then would
+    // like to change the color of a current shape
+    // Then force a render with upated color
+    if (currentSelectedShape != null){
+        if (fillColorSelected){
+            currentSelectedShape.setFillColor(color);
+            renderShapes();
+        }
+        else if (lineColorSelected){
+            currentSelectedShape.setFillColor(color);
+            renderShapes();
+        }
+    }
 }
 
 function setLineThickeness(thickness) {
 	currentlySelectedLineThickness = thickness;
 	document.getElementById("thickDisp").innerHTML = "Thickness: " + thickness;
+    // If user selects the shape and then would
+    // like to change the color of a current shape
+    if (currentSelectedShape != null){
+        currentSelectedShape.setLineThickness(thickness);
+    }
 }
 
 function setColorSelector(type) {

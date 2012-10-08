@@ -58,7 +58,7 @@ function hidePallets(rect, circle, line){
 
 $(document).ready(function() {
 	
-    $("#rectangle").click(function() {
+   /* $("#rectangle").click(function() {
     	if (!rectanglePalletShowing){
     		hidePallets(false, true, true);
 			showPallets(true, false, false);
@@ -86,5 +86,5 @@ $(document).ready(function() {
      } else {
 			hidePallets(false, true, false);
      }
-  });
+  });*/
 });
