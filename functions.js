@@ -454,7 +454,6 @@ function commandCanvas(command) {
 		break;
 	case COPY_PASTE:
 		var copyPasteButton = document.getElementById(COPY_PASTE);
-		
         if (currentSelectedShape != null) {
 			if (copyPasteButton.innerHTML == "Copy") {
 				copyPasteButton.innerHTML = "Paste";
@@ -481,10 +480,10 @@ function copyShape(shape){
     newShape.fillColor = shape.fillColor;
     newShape.lineColor = shape.lineColor;
     newShape.lineThickness = shape.lineThickness;
-    newShape.endX = currentSelectedShape.endX;
-    newShape.endY = currentSelectedShape.endY;
-    newShape.baseX = currentSelectedShape.baseX;
-    newShape.baseY = currentSelectedShape.baseY;
+    newShape.endX = shape.endX;
+    newShape.endY = shape.endY;
+    newShape.baseX = shape.baseX;
+    newShape.baseY = shape.baseY;
     return newShape;
 }
 
