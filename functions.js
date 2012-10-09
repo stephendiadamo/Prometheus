@@ -7,7 +7,7 @@ var SAVE = "save";
 var FILLCOLOR = "fillColor";
 var LINECOLOR = "lineColor";
 var DELETE = "delete";
-var COPY_PASTE = "copy_paste"
+var COPY_PASTE = "copy_paste";
 
 // Globals
 var rectangleSelected = true;
@@ -43,7 +43,7 @@ var context;
 $(document).ready(function () {
 	// Set up variables necessary for drawing
 	canvas = document.getElementById("drawingCanvas");
-	context = canvas.getContext('2d');
+	context = canvas.getContext('2d');	
 
 	$('#drawingCanvas').mousedown(function (e) {
 		mouseDown = true;
@@ -443,26 +443,28 @@ function commandCanvas(command) {
 		currentSelectedShape = null;
 
 		shapes = []; // er...
+		renderShapes();
 		break;
 	case SAVE:
 		var dataURL = canvas.toDataURL();
 		alert("THIS IS THE ENCODED PNG: \n" + dataURL);
 		break;
-	case DELETE:
-		removeShapeFromArray(currentSelectedShape);
-		renderShapes();
-		break;
 	case COPY_PASTE:
 		var copyPasteButton = document.getElementById(COPY_PASTE);
-        if (currentSelectedShape != null) {
+        if (currentSelectedShape != null || currentCopiedShape != null) {
 			if (copyPasteButton.innerHTML == "Copy") {
 				copyPasteButton.innerHTML = "Paste";
-				currentCopiedShape = copyShape(currentSelectedShape)
+				currentCopiedShape = copyShape(currentSelectedShape);
 			} else if (copyPasteButton.innerHTML == "Paste") {
 				copyPasteButton.innerHTML = "Copy";
 				currentCopiedShape = null;
 			}
 		}
+		break;
+	case DELETE:
+		removeShapeFromArray(currentSelectedShape);
+		renderShapes();
+		break;
 	}
 }
 
@@ -627,6 +629,7 @@ function hitTest(coordinates) {
             
             // Set the current shape global var
             currentSelectedShape = shape;
+            bringToFront(currentSelectedShape);
             
             // Expand pallets used to modify current selected shape
             var toShow = [ (shape instanceof Rectangle),
@@ -781,9 +784,14 @@ Shape.prototype.selectionHandlerResize = function (mouseCoord) {
 	}
 }
 
+function bringToFront(shape){
+	removeShapeFromArray(shape);
+	shapes.push(shape);
+}
+
+
 function removeShapeFromArray(shape) {
 	if (shape != null) {
-
 		// Done in reverse because it is more likely that the shape will be stacked on another.
 		// (i.e. more effiecient) 
 		for (var i = shapes.length - 1; i >= 0; i--) {
