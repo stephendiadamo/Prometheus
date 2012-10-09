@@ -9,6 +9,7 @@ function showPallets(rect, circle, line){
 		hidePallets(false, true, true);
 		$("#rectanglePallet").html($("#drawingOptions").html());
      	$("#rectanglePallet").slideDown(600);
+         $("#fillColorSelector").css("font-weight", "900");
      	rectanglePalletShowing = true;
 	}
  
@@ -16,6 +17,7 @@ function showPallets(rect, circle, line){
 		hidePallets(true, false, true);
      	$("#circlePallet").html($("#drawingOptions").html());
      	$("#circlePallet").slideDown(600);
+        $("#fillColorSelector").css("font-weight", "900");
 	  	circlePalletShowing = true;
 	}
 
@@ -23,6 +25,7 @@ function showPallets(rect, circle, line){
 		hidePallets(true, true, false);
      	$("#straightLinePallet").html($("#drawingOptions").html());
      	$("#straightLinePallet").slideDown(600);
+        $("#fillColorSelector").css("font-weight", "900");
      	straightLinePalletShowing = true;
 	}		
 }

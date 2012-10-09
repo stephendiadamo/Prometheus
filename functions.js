@@ -26,7 +26,7 @@ var currentSelectedTool = null;
 var currentSelectedShape = null;
 var currentsetDraw = null;
 var currentSelectedHandle = false;
-var currentCopiedShaped = null;
+var currentCopiedShape = null;
 
 // Selection variables 
 var mainSelectionHandles = [];
@@ -135,8 +135,11 @@ Shape.prototype.setBaseCoordinates = function (x, y) {
 
 function Line(pointStart, lineColor, lineThickness) {
 	// Initialize a line with no length first
-	Shape.call(this, pointStart[0], pointStart[1], null, lineColor, lineThickness);
-
+    if (pointStart != null){
+	    Shape.call(this, pointStart[0], pointStart[1], null, lineColor, lineThickness);
+    } else {
+        Shape.call(this, null, null, null, lineColor, lineThickness);
+    }
 	// Set these using getters and setters 
 	//this.x_end = 0;
 	//this.y_end = 0;
@@ -246,7 +249,11 @@ Line.prototype.hitTest = function (testX, testY) {
 };
 
 function Rectangle(pointStart, fillColor, lineColor, lineThickness) {
-	Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
+    if (pointStart != null){
+    	Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
+    } else {
+        Shape.call(this, null, null, fillColor, lineColor, lineThickness);
+    }
 	//this.length = 0;
 	//this.height = 0;
 }
@@ -399,8 +406,7 @@ function setSelectedTool(shapeID) {
 	if (currentSelectedTool == shapeID) {
 	    currentSelectedTool = null;
         hidePallets(true, true, true);
-
-	    }
+    }
 	else {
 	    // Immediately deselect currently selected shape
 	    // Go into drawing mode
@@ -415,6 +421,7 @@ function setSelectedTool(shapeID) {
                 (shapeID == CIRCLE), (shapeID == LINE) ];
         
         showPallets(toShow[0], toShow[1], toShow[2]);
+        $("#fillColorSelector").css("font-weight", "900");
 	}
 	renderShapes();
 	document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
@@ -447,35 +454,38 @@ function commandCanvas(command) {
 		break;
 	case COPY_PASTE:
 		var copyPasteButton = document.getElementById(COPY_PASTE);
-		if (currentSelectedShape != null) {
+		
+        if (currentSelectedShape != null) {
 			if (copyPasteButton.innerHTML == "Copy") {
 				copyPasteButton.innerHTML = "Paste";
-				if (currentSelectedShape instanceof Circle) {
-					currentCopiedShape = new Circle;
-					currentCopiedShape.radius = currentSelectedShape.radius;
-				} else if (currentSelectedShape instanceof Rectangle) {
-					currentCopiedShape = new Rectangle;
-				} else if (currentSelectedShape instanceof Line) {
-					currentCopiedShape = new Line;
-				}
-				// Currently broken for rectangle (possibly line too).
-				// Some propery of rectangle is not being set, so it is breaking. 
- 				// Works for circle.			
-			
-				currentCopiedShape.baseX = currentSelectedShape.baseX;
-				currentCopiedShape.baseY = currentSelectedShape.baseY;
-				currentCopiedShape.fillColor = currentSelectedShape.fillColor;
-				currentCopiedShape.lineColor = currentSelectedShape.lineColor;
-				currentCopiedShape.lineThickness = currentSelectedShape.lineThickness;
-				currentCopiedShape.endX = currentSelectedShape.endX;
-				currentCopiedShape.endY = currentSelectedShape.endY;
-				
+				currentCopiedShape = copyShape(currentSelectedShape)
 			} else if (copyPasteButton.innerHTML == "Paste") {
 				copyPasteButton.innerHTML = "Copy";
-				currentlyCopiedShape = null;
+				currentCopiedShape = null;
 			}
 		}
 	}
+}
+
+function copyShape(shape){
+    var newShape;
+    if (shape instanceof Circle) {
+        newShape = new Circle;
+        newShape.radius = shape.radius;
+    } else if (shape instanceof Rectangle) {
+        newShape = new Rectangle;
+    } else if (shape instanceof Line) {
+        newShape = new Line;
+    }         
+
+    newShape.fillColor = shape.fillColor;
+    newShape.lineColor = shape.lineColor;
+    newShape.lineThickness = shape.lineThickness;
+    newShape.endX = currentSelectedShape.endX;
+    newShape.endY = currentSelectedShape.endY;
+    newShape.baseX = currentSelectedShape.baseX;
+    newShape.baseY = currentSelectedShape.baseY;
+    return newShape;
 }
 
 // Get the mouse coordinates with respect to the canvas
@@ -552,8 +562,21 @@ function addShape(event) {
 	// First we add the shape
 	var drawShape = null;
 
-	// HitTestwill Render itself
-	if (currentSelectedTool == null) {
+	// Pasting
+    if (currentSelectedTool == null && currentCopiedShape != null) {
+        var toPaste = copyShape(currentCopiedShape); 
+        var relativeLength_x = currentCopiedShape.endX - currentCopiedShape.baseX;
+        var relativeLength_y = currentCopiedShape.endY - currentCopiedShape.baseY;
+        toPaste.baseX = coordinates[0];
+        toPaste.baseY = coordinates[1];
+        toPaste.endX = coordinates[0] + relativeLength_x;
+        toPaste.endY = coordinates[1] + relativeLength_y;
+
+       shapes.push(toPaste);
+       renderShapes();
+
+    // HitTestwill Render itself 
+    } else if (currentSelectedTool == null) {
 		hitTest(coordinates);
 	} else {
 		switch (currentSelectedTool) {
@@ -787,12 +810,11 @@ function setColor(color) {
     if (currentSelectedShape != null){
         if (fillColorSelected){
             currentSelectedShape.setFillColor(color);
-            renderShapes();
         }
         else if (lineColorSelected){
-            currentSelectedShape.setFillColor(color);
-            renderShapes();
+            currentSelectedShape.setLineColor(color);
         }
+        renderShapes();
     }
 }
 
@@ -803,6 +825,7 @@ function setLineThickeness(thickness) {
     // like to change the color of a current shape
     if (currentSelectedShape != null){
         currentSelectedShape.setLineThickness(thickness);
+        renderShapes();
     }
 }
 
@@ -810,7 +833,6 @@ function setColorSelector(type) {
 	if (type == FILLCOLOR) {
 		fillColorSelected = true;
 		lineColorSelected = false;
-		$("#fillColorSelector").css("font-weight", "900");
 		$("#lineColorSelector").css("font-weight", "normal");
 
 	} else if (type == LINECOLOR) {
