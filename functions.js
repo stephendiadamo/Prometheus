@@ -183,10 +183,7 @@ Line.prototype.hitTest = function (testX, testY) {
     
     // If completely vertical
     if ((x2 - x1) == 0){
-        if (testY > y1 + lineThickness &&
-                testY < y2 + lineThickness && 
-                testX > x1 - lineThickness &&
-                testX < x1 + lineThickness){
+        if (testY > y1 + lineThickness && testY < y2 + lineThickness && testX > x1 - lineThickness && testX < x1 + lineThickness){
             return true;
         }
         return false;
@@ -196,10 +193,7 @@ Line.prototype.hitTest = function (testX, testY) {
     
     // If completely horizontal
     if (y2 - y1 == 0){
-        if (testX > x1 + lineThickness &&
-                testX < x2 + lineThickness && 
-                testY > y1 - lineThickness &&
-                testY < y1 + lineThickness){
+        if (testX > x1 + lineThickness && testX < x2 + lineThickness && testY > y1 - lineThickness && testY < y1 + lineThickness){
             return true;
         }
         return false;
@@ -235,15 +229,20 @@ Line.prototype.hitTest = function (testX, testY) {
      * - Hit.
      * 
      */
+    var hitTest = false;
     for (currentY = testY - errorRate ; currentY < testY + errorRate ; currentY ++){
         currentX = (currentY-b)/m;
-        if (currentX < x1 - lineThickness || currentX > x2 + lineThickness){
-            return false;
-        }
-        if (testX > (currentX - lineThickness) && testX < (currentX + lineThickness)){
+        
+        if (testX > (currentX - lineThickness) && testX < (currentX + lineThickness) &&
+                ((testX > (x1  - lineThickness) && testX < (x2 + lineThickness) ) || 
+                 (testX > (x2 - lineThickness) && testX < ( x1 + lineThickness) ) )
+                 ){
             return true;
         }
     }
+    
+    
+
         
 	return false;
 };
