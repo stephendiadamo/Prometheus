@@ -46,6 +46,19 @@ $(document).ready(function () {
 	context = canvas.getContext('2d');	
 
 	$('#drawingCanvas').mousedown(function (e) {
+	    
+	    switch (e.which) {
+        case 1: // left mouse button pressed
+            console.log('Left mouse button pressed');
+            break;
+        case 3:// RIght mouse button pressed
+            setSelectedTool(null);
+            console.log('Right mouse button pressed');
+            break;
+        default:
+            console.log('You have a strange mouse');
+    }
+	    
 		mouseDown = true;
 		addShape(e);
 	});
@@ -401,19 +414,23 @@ Circle.prototype.selectionHandlerResize = function (mouseCoord) {
  * @param shapeID
  */
 function setSelectedTool(shapeID) {
-	if (currentSelectedTool == shapeID) {
-	    currentSelectedTool = null;
+    if (currentSelectedTool == shapeID || shapeID == null){
+        currentSelectedTool = null
         hidePallets(true, true, true);
+
     }
+
 	else {
+	    
 	    // Immediately deselect currently selected shape
 	    // Go into drawing mode
 	    if (currentSelectedShape != null){
-	        currentSelectedShape.setSelected(false);
-	    }
-	    currentSelectedShape = null;
-	    currentSelectedHandle = false;
-	    currentSelectedTool = shapeID;
+            currentSelectedShape.setSelected(false);
+        }
+
+	       currentSelectedShape = null;
+	       currentSelectedHandle = false;
+	       currentSelectedTool = shapeID;
         // Expand pallets used to modify current selected shape
         var toShow = [ (shapeID == RECTANGLE),
                 (shapeID == CIRCLE), (shapeID == LINE) ];
