@@ -48,7 +48,6 @@ $(document).ready(function () {
 	$('#drawingCanvas').mousedown(function (e) {
 		mouseDown = true;
 		addShape(e);
-		console.log("TADA");
 	});
 
 	$('#drawingCanvas').mouseup(function (e) {
