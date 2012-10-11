@@ -4,6 +4,7 @@
 	padding-right: 50px;
 	left: 0;
 	top: 0;
+	border-style:solid;
 }
 
 body {
@@ -44,6 +45,7 @@ button {
 }
 
 .optionButton {
+	
 
 }
 

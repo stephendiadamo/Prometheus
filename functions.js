@@ -48,10 +48,16 @@ $(document).ready(function () {
 	$('#drawingCanvas').mousedown(function (e) {
 	    
 	    switch (e.which) {
-        case 1: // left mouse button pressed
+        case 1: // Left mouse button pressed
             console.log('Left mouse button pressed');
             break;
-        case 3:// RIght mouse button pressed
+        case 2: // Middle mouse button clicked
+        	if (currentSelectedShape != null){
+				removeShapeFromArray(currentSelectedShape);
+				renderShapes();
+			}
+        	break;
+        case 3:// Right mouse button pressed
             setSelectedTool(null);
             console.log('Right mouse button pressed');
             break;
