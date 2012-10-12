@@ -46,24 +46,23 @@ $(document).ready(function () {
 	context = canvas.getContext('2d');	
 
 	$('#drawingCanvas').mousedown(function (e) {
-	    
 	    switch (e.which) {
-        case 1: // Left mouse button pressed
-            console.log('Left mouse button pressed');
-            break;
-        case 2: // Middle mouse button clicked
-        	if (currentSelectedShape != null){
-				removeShapeFromArray(currentSelectedShape);
-				renderShapes();
-			}
-        	break;
-        case 3:// Right mouse button pressed
-            setSelectedTool(null);
-            console.log('Right mouse button pressed');
-            break;
-        default:
-            console.log('You have a strange mouse');
-    	}   
+			case 1: // Left mouse button pressed
+				console.log('Left mouse button pressed');
+				break;
+			case 2: // Middle mouse button clicked
+				if (currentSelectedShape != null){
+					removeShapeFromArray(currentSelectedShape);
+					renderShapes();
+				}
+				break;
+			case 3:// Right mouse button pressed
+				setSelectedTool(null);
+				console.log('Right mouse button pressed');
+				break;
+			default:
+				console.log('You have a strange mouse');
+			}   
 		mouseDown = true;
 		addShape(e);
 	});
@@ -75,7 +74,7 @@ $(document).ready(function () {
 
 	// Need to add mouse movement event
 	$("#drawingCanvas").mousemove(function (e) {
-		if (mouseDown) {
+		if (mouseDown && e.which == 1) {
 			modifyShapes(e);
 		}
 	});
@@ -186,7 +185,6 @@ Line.prototype.draw = function () {
 
 Line.prototype.hitTest = function (testX, testY) {
 	// Need to think of logic to implement this
-    
     console.log("TEST finding" + testX + " | " +  testY);
     var lineThickness = this.lineThickness + 10;
 
@@ -205,9 +203,6 @@ Line.prototype.hitTest = function (testX, testY) {
         }
         return false;
     }
-       
-    
-    
     // If completely horizontal
     if (y2 - y1 == 0){
         if (testX > x1 + lineThickness && testX < x2 + lineThickness && testY > y1 - lineThickness && testY < y1 + lineThickness){
@@ -219,8 +214,6 @@ Line.prototype.hitTest = function (testX, testY) {
     // If completely vertical y2 - y1 will be 0 
     
     var m = (y2 - y1) / (x2 - x1);
-
-    
     var b = y2 - (x2*m);
     
     var height = Math.abs(y2 - y1);
@@ -257,10 +250,6 @@ Line.prototype.hitTest = function (testX, testY) {
             return true;
         }
     }
-    
-    
-
-        
 	return false;
 };
 
@@ -424,7 +413,6 @@ function setSelectedTool(shapeID) {
         hidePallets(true, true, true);
 
     }
-
 	else {
 	    
 	    // Immediately deselect currently selected shape
@@ -472,6 +460,10 @@ function commandCanvas(command) {
 			if (copyPasteButton.innerHTML == "Copy") {
 				copyPasteButton.innerHTML = "Paste";
 				currentCopiedShape = copyShape(currentSelectedShape);
+				currentSelectedShape.setSelected(false);
+				currentSelectedShape = null;
+				hidePallets(true, true, true);
+				renderShapes();
 			} else if (copyPasteButton.innerHTML == "Paste") {
 				copyPasteButton.innerHTML = "Copy";
 				currentCopiedShape = null;
@@ -495,7 +487,6 @@ function copyShape(shape){
     } else if (shape instanceof Line) {
         newShape = new Line;
     }         
-
     newShape.fillColor = shape.fillColor;
     newShape.lineColor = shape.lineColor;
     newShape.lineThickness = shape.lineThickness;
@@ -509,7 +500,7 @@ function copyShape(shape){
 // Get the mouse coordinates with respect to the canvas
 function updateMouseCoordinates(event) {
 	// Paranoid check
-	if (event == null && canvas == null) return null;
+	if (event == null && canvas == null || event.which != 1) return null;
 
 	var coordinates = document.getElementById("coords");
 
@@ -533,7 +524,6 @@ function finishShape(event) {
  * - More comments to be added
  */
 function modifyShapes(event) {
-
 	// If we are currently moving the mouse to draw the shape:
 	if (currentsetDraw != null) {
 		var coordinates = updateMouseCoordinates(event);
@@ -549,7 +539,6 @@ function modifyShapes(event) {
 		// Use the dragging functionality here to set the endpoints
 		currentSelectedShape.selectionHandlerResize(coordinates);
 		renderShapes();
-
 	}
 	// If we are trying to move the object without the select handle
 	// Usually for translation
@@ -561,7 +550,6 @@ function modifyShapes(event) {
 		var savedDimensions = [dimentions[0] - baseCoordinates[0], dimentions[1] - baseCoordinates[1]]
 		currentSelectedShape.setBaseCoordinates(coordinates[0] - mouseOffset[0], coordinates[1] - mouseOffset[1]);
 		currentSelectedShape.setDimension(coordinates[0] - mouseOffset[0] + savedDimensions[0], coordinates[1] - mouseOffset[1] + savedDimensions[1]);
-
 		renderShapes();
 	}
 }
