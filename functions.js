@@ -463,7 +463,8 @@ function commandCanvas(command) {
 		break;
 	case SAVE:
 		var dataURL = canvas.toDataURL();
-		alert("THIS IS THE ENCODED PNG: \n" + dataURL);
+		window.open(dataURL);
+		//alert("THIS IS THE ENCODED PNG: \n" + dataURL);
 		break;
 	case COPY_PASTE:
 		var copyPasteButton = document.getElementById(COPY_PASTE);
