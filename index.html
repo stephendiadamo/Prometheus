@@ -15,16 +15,11 @@
 
 <body>
 		<header> CSC309 Assignment - HTML5 Paint </header>
+		<br>
 		<div id="wrapper">
-		<div id="leftMenu">			
-			<div id="options">	
-				<button class="optionButton" id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
-				<button class="optionButton" id="copy_paste" onclick="commandCanvas(this.id)">Copy</button>
-				<button class="optionButton" id="straightLine" onclick="setSelectedTool(this.id)">
-					<img src="Images/line_button.png"/>
-				</button>
-				<div id="straightLinePallet"></div>
-				<button class="optionButton" id="rectangle" onclick="setSelectedTool(this.id)">
+		<div id="leftMenu">	
+			<div id="options">
+				<button style="margin-top: 0px" class="optionButton" id="rectangle" onclick="setSelectedTool(this.id)">
 					<img src="Images/rectangle_button.png"/>
 				</button>
 				<div id="rectanglePallet"></div>
@@ -32,14 +27,15 @@
 					<img src="Images/circle_button.png"/>
 				</button>
 				<div id="circlePallet"></div>
-				<button class="optionButton" id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
+				<button class="optionButton" id="straightLine" onclick="setSelectedTool(this.id)">
+					<img src="Images/line_button.png"/>
+				</button>
+				<div id="straightLinePallet"></div>
+				<button class="optionButton" id="clear" onclick="commandCanvas(this.id)">Clear Canvas</button>
+				<button class="optionButton" id="copy_paste" onclick="commandCanvas(this.id)">Copy</button>
 				<button class="optionButton" id="delete" onclick="commandCanvas(this.id)">Delete</button>
+				<button class="optionButton" id="save" onclick="commandCanvas(this.id)">Save Drawing</button>
 			</div>
-	
-			<p id="coords">mouse: (0, 0)</p>
-			<p id="curColor">Color: #f00</p>
-			<span id="curShape">Shape: null</span>
-			<p id="thickDisp"> Thickness: 1 </p>
 		
 			<div id="drawingOptions">
 				<div id="leftPallet">
@@ -118,31 +114,31 @@
 				</div>
 				<div id="rightPallet">
 					<div>
-						<button onclick="setLineThickeness(1)"> <hr noshade color="#000" size=1/> </button>
+						<button  class="optionButton" onclick="setLineThickeness(1)"> <hr noshade color="#000" size=1/ </button>
 					</div>
 					<div>
-						<button onclick="setLineThickeness(2)"> <hr noshade color="#000" size=2/> </button>
+						<button class="optionButton" onclick="setLineThickeness(2)"> <hr noshade color="#000" size=2/> </button>
 					</div>
 					<div>
-						<button onclick="setLineThickeness(4)"> <hr noshade color="#000" size=4/> </button>
+						<button class="optionButton" onclick="setLineThickeness(4)"> <hr noshade color="#000" size=4/> </button>
 					</div>
 					<div>
-						<button onclick="setLineThickeness(6)"> <hr noshade color="#000" size=6/> </button>
+						<button class="optionButton" onclick="setLineThickeness(6)"> <hr noshade color="#000" size=6/> </button>
 					</div>
 					<div>
-						<button onclick="setLineThickeness(8)"> <hr noshade color="#000" size=8/>  </button>
+						<button class="optionButton" onclick="setLineThickeness(8)"> <hr noshade color="#000" size=8/>  </button>
 					</div>
 				</div>
 
 				<div id="bottomPallet">
-					<button id="fillColorSelector" onclick="setColorSelector('fillColor')">Fill color</button>
-					<button id="lineColorSelector" onclick="setColorSelector('lineColor')">Line color</button>
+					<button class="optionButton" id="fillColorSelector" onclick="setColorSelector('fillColor')">Fill color</button>
+					<button class="optionButton" id="lineColorSelector" onclick="setColorSelector('lineColor')">Line color</button>
 				</div>
 			</div>
 
 		</div>
 		<div>
-				<canvas id="drawingCanvas" width="750" height="550" oncontextmenu="return false;"></canvas>
+				<canvas id="drawingCanvas" width="800" height="550" oncontextmenu="return false;"></canvas>
 		</div>
 	</div>
 </body>

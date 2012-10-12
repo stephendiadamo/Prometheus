@@ -1,26 +1,22 @@
 #leftMenu{
-	width: 210px;
+	width: 250px;
 	float:left;
-	padding-right: 50px;
-	left: 0;
-	top: 0;
-	border-style:solid;
 }
 
 body {
-	width: 1100px;
-	background: #eee;
+	width: 1200px;
+	background: #c9edf5;
 }
 
 header {
 	font-family: times, Times New Roman, times-roman, georgia, serif;
-	color: #333;
+	color: #244287;
 	padding-top: 50px;
 	font-size: 40px;
 	line-height: 44px;
 	letter-spacing: -1px;
 	font-weight: bold;
-	background: #ccc;
+	background: #bddbfa;
 	position: absolute;
 	text-align: center;
 	width: 100%;
@@ -34,23 +30,57 @@ header {
 #straightLinePallet, #rectanglePallet, #circlePallet {
 	display: none;
 	height: 230px;
+	width: 250px;
+	margin: 0 auto;
+	margin-left: 10px;
 }
 
 button {
-	width: 120px;
-	height: 30px;
-	margin-top: 10px;*/
+	width: 100%;
+	height: 50px;
+	margin-top: 10px;
 	padding: 5px;
 	text-align: center;
+	margin: 5 auto;
 }
 
 .optionButton {
-	
+	-moz-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #bddbfa), color-stop(1, #80b5ea) );
+	background:-moz-linear-gradient( center top, #bddbfa 5%, #80b5ea 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#bddbfa', endColorstr='#80b5ea');
+	background-color:#bddbfa;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:15px;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #528ecc;
+}
 
+.optionButton:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #80b5ea), color-stop(1, #bddbfa) );
+	background:-moz-linear-gradient( center top, #80b5ea 5%, #bddbfa 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#80b5ea', endColorstr='#bddbfa');
+	background-color:#80b5ea;
+}
+
+.optionButton:active {
+	position:relative;
+	top:1px;
 }
 
 #options{
 	margin: 0px auto;
+	width:100%;
 }
 
 #wrapper {
@@ -70,23 +100,10 @@ canvas {
 .colorButton {
 	width: 30px;
 	height: 30px;
-	margin-bottom: -15px;
+	margin-bottom: 7px;
+	margin-right: 3px;
 }
 
-#rightPallet button{
-	width: 90px;
-	height: 25px;
-}
-
-#drawingOptions{
-	display: none;
-	width: 100%;
-}
-
-#colorPallet {
-	width: 50%;
-	margin: auto;
-}
 #leftPallet {
 	width: 45%;
 	float: left;
@@ -94,16 +111,9 @@ canvas {
 	top: 0;	
 }
 
-#bottomPallet {
-	width: 100%;
-	float: left;
-	margin-top: 5px;
-}
-
-#bottomPallet button{
-	width: 95px;
-	float: left;
-	margin: 5px;
+#rightPallet button{
+	width: 100px;
+	height: 40px;
 }
 
 #rightPallet {
@@ -111,4 +121,28 @@ canvas {
 	float: right;
 	right: 0;
 	top: 0;	
+	margin-left: 5px;
 }
+#drawingOptions{
+	display: none;
+	width: 20px;
+	border-style: solid;
+}
+
+#colorPallet {
+	width: 50%;
+	margin: auto;
+}
+
+#bottomPallet {
+	width: 260px;
+	float: left;
+	margin-top: 5px;
+}
+
+#bottomPallet button{
+	width: 95px;
+	float: left;
+	margin: 7px;
+}
+

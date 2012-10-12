@@ -63,8 +63,7 @@ $(document).ready(function () {
             break;
         default:
             console.log('You have a strange mouse');
-    }
-	    
+    	}   
 		mouseDown = true;
 		addShape(e);
 	});
@@ -445,7 +444,6 @@ function setSelectedTool(shapeID) {
         $("#fillColorSelector").css("font-weight", "900");
 	}
 	renderShapes();
-	document.getElementById("curShape").innerHTML = "Shape : " + currentSelectedTool;
 }
 
 /*
@@ -459,10 +457,7 @@ function commandCanvas(command) {
 		// Will always clear the right space
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		context.restore();
-
-		setSelectedTool(null);
 		currentSelectedShape = null;
-
 		shapes = []; // er...
 		renderShapes();
 		break;
@@ -520,10 +515,6 @@ function updateMouseCoordinates(event) {
 	// With respect to the canvas
 	var x = event.pageX - canvas.offsetLeft;
 	var y = event.pageY - canvas.offsetTop;
-
-	// Display for now
-	coordinates.innerHTML = " (" + x + ", " + y + ")";
-
 	return [x, y];
 }
 
@@ -580,6 +571,7 @@ function modifyShapes(event) {
  * are then trying to select shapes - do hit test.
  */
 function addShape(event) {
+	
 	var coordinates = updateMouseCoordinates(event);
 	// First we add the shape
 	var drawShape = null;
@@ -827,7 +819,6 @@ function removeShapeFromArray(shape) {
 function setColor(color) {
     if (fillColorSelected) {
         currentSelectedFillColor = color;
-        document.getElementById("curColor").innerHTML = "Color: " + color;
     } else if (lineColorSelected) {
         currentSelectedOutlineColor = color;
     }
@@ -848,7 +839,6 @@ function setColor(color) {
 
 function setLineThickeness(thickness) {
 	currentlySelectedLineThickness = thickness;
-	document.getElementById("thickDisp").innerHTML = "Thickness: " + thickness;
     // If user selects the shape and then would
     // like to change the color of a current shape
     if (currentSelectedShape != null){
@@ -862,11 +852,12 @@ function setColorSelector(type) {
 		fillColorSelected = true;
 		lineColorSelected = false;
 		$("#lineColorSelector").css("font-weight", "normal");
+		$("#fillColorSelector").css("font-weight", "900");
 
 	} else if (type == LINECOLOR) {
 		fillColorSelected = false;
 		lineColorSelected = true;
 		$("#fillColorSelector").css("font-weight", "normal");
-		$("#lineColorSelector").css("font-weight", "900");
+		$("#lineColorSelector").css("font-weight", "900");		
 	}
 }

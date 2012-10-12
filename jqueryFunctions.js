@@ -8,15 +8,15 @@ function showPallets(rect, circle, line){
 	if (rect) {
 		hidePallets(false, true, true);
 		$("#rectanglePallet").html($("#drawingOptions").html());
-     	$("#rectanglePallet").slideDown(600);
-         $("#fillColorSelector").css("font-weight", "900");
+     	$("#rectanglePallet").slideDown(300);
+        $("#fillColorSelector").css("font-weight", "900");
      	rectanglePalletShowing = true;
 	}
  
 	if (circle) {
 		hidePallets(true, false, true);
      	$("#circlePallet").html($("#drawingOptions").html());
-     	$("#circlePallet").slideDown(600);
+     	$("#circlePallet").slideDown(300);
         $("#fillColorSelector").css("font-weight", "900");
 	  	circlePalletShowing = true;
 	}
@@ -24,7 +24,7 @@ function showPallets(rect, circle, line){
 	if (line) {
 		hidePallets(true, true, false);
      	$("#straightLinePallet").html($("#drawingOptions").html());
-     	$("#straightLinePallet").slideDown(600);
+     	$("#straightLinePallet").slideDown(300);
         $("#fillColorSelector").css("font-weight", "900");
      	straightLinePalletShowing = true;
 	}		
@@ -32,27 +32,27 @@ function showPallets(rect, circle, line){
 
 function hidePallets(rect, circle, line){
 		if (rect){
-        	$("#rectanglePallet").slideUp(600, function() {
-        		$("#rectanglePallet").html("");
+        	$("#rectanglePallet").slideUp(300, function() {
         		$("#rectanglePallet").css("display", "none");
+        		$("#rectanglePallet").html("");
         	});
         	rectanglePalletShowing = false;
         	$("#rectangle").css("font-weight", "normal");
 		}
 
 		if (circle){
-			$("#circlePallet").slideUp(600, function() {
-        		$("#circlePallet").html("");
+			$("#circlePallet").slideUp(300, function() {
         		$("#circlePallet").css("display", "none");
+				$("#circlePallet").html("");
         	});
         	circlePalletShowing = false;
         	$("#circle").css("font-weight", "normal");
 		}
 
 		if (line){
-			$("#straightLinePallet").slideUp(600, function() {
-        		$("#straightLinePallet").html("");
+			$("#straightLinePallet").slideUp(300, function() {
         		$("#straightLinePallet").css("display", "none");
+	       		$("#straightLinePallet").html("");
         	});
         	straightLinePalletShowing = false;
         	$("#straightLine").css("font-weight", "normal");
