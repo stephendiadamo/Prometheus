@@ -15,7 +15,6 @@ var circleSelected = false;
 var straightLineSelected = false;
 var fillColorSelected = true;
 var lineColorSelected = false;
-
 var shapes = [];
 
 // Toolset option variables
@@ -35,7 +34,6 @@ var mySelBoxSize = 10;
 var mouseDowncoord; // For calculating offsets
 var mouseDown = false; // Used for mouseMove events
 
-// Do not OVERRIDE these variables!
 var canvas;
 var context;
 
@@ -91,8 +89,6 @@ $(document).ready(function () {
  * Basic shape variables
  */
 function Shape(x, y, fillColor, lineColor, lineThickness) {
-	// Won't need ID since the hittest returns the selected object
-	//  this.id = 0; // Identifies current shape in array
 	this.baseX = x;
 	this.baseY = y;
 	this.fillColor = fillColor;
@@ -105,11 +101,8 @@ function Shape(x, y, fillColor, lineColor, lineThickness) {
 	// not moved to give object size
 	this.endX = x;
 	this.endY = y;
-
-	// Rotate isn't a required feature, maybe leave that until later
-	// this.rotate = 0.0;
-
 }
+
 Shape.prototype.setFillColor = function (newColor){
     this.fillColor = newColor;
 }
@@ -144,10 +137,6 @@ Shape.prototype.setBaseCoordinates = function (x, y) {
 	this.baseX = x;
 	this.baseY = y;
 }
-// TODO: Make getters and setters for the other properties + grab a milkshake later on from Mcdonalds
-
-// Trying to keep objects minimal, keeping functions outside of the 
-// constructors
 
 function Line(pointStart, lineColor, lineThickness) {
 	// Initialize a line with no length first
@@ -156,21 +145,10 @@ function Line(pointStart, lineColor, lineThickness) {
     } else {
         Shape.call(this, null, null, null, lineColor, lineThickness);
     }
-	// Set these using getters and setters 
-	//this.x_end = 0;
-	//this.y_end = 0;
 }
 
 Line.prototype = new Shape();
 Line.prototype.constructor = Line;
-
-/*Line.prototype.setEndPoints = function (x_end, y_end){
-    this.x_end = x_end;
-    this.y_end = y_end;
-}
-Line.prototype.getEndPoints = function() {
-    return [this.x_end, this.y_end];
-}*/
 Line.prototype.draw = function () {
 	context.setTransform(1, 0, 0, 1, 0, 0);
 	//context.moveTo(this.x, this.y);
@@ -259,20 +237,10 @@ function Rectangle(pointStart, fillColor, lineColor, lineThickness) {
     } else {
         Shape.call(this, null, null, fillColor, lineColor, lineThickness);
     }
-	//this.length = 0;
-	//this.height = 0;
 }
+
 Rectangle.prototype = new Shape();
 Rectangle.prototype.constructor = Rectangle;
-/*
-Rectangle.prototype.setLengthAndHeight = function (length, height){
-    this.length = length;
-    this.height = height;
-}
-Rectangle.prototype.getLengthAndHeight = function() {
-    return [this.length, this.height];
-}*/
-
 Rectangle.prototype.draw = function () {
 	context.beginPath();
 	context.fillStyle = this.fillColor;
@@ -388,14 +356,12 @@ Circle.prototype.selectionHandlerResize = function (mouseCoord) {
         break;
     case 5:
         currentSelectedShape.setDimension(mouseCoord[0] + currentRad, mouseCoord[1]);
-
         break;
     case 6:
         currentSelectedShape.setDimension(mouseCoord[0], mouseCoord[1]);
         break;
     case 7:
         currentSelectedShape.setDimension(mouseCoord[0] - currentRad, mouseCoord[1]);
-
         break;
     }
 
@@ -411,10 +377,8 @@ function setSelectedTool(shapeID) {
     if (currentSelectedTool == shapeID || shapeID == null){
         currentSelectedTool = null
         hidePallets(true, true, true);
-
     }
 	else {
-	    
 	    // Immediately deselect currently selected shape
 	    // Go into drawing mode
 	    if (currentSelectedShape != null){
@@ -429,7 +393,11 @@ function setSelectedTool(shapeID) {
                 (shapeID == CIRCLE), (shapeID == LINE) ];
         
         showPallets(toShow[0], toShow[1], toShow[2]);
-        $("#fillColorSelector").css("font-weight", "900");
+        if (fillColorSelected){
+        	$("#fillColorSelector").css("font-weight", "900");
+        } else if (lineColorSelected) {
+        	$("#lineColorSelector").css("font-weight", "900");
+        }
 	}
 	renderShapes();
 }
@@ -604,7 +572,6 @@ function addShape(event) {
 function hitTest(coordinates) {
     // Reset the current selected shape
     var selectedHighest = false;
-    // var selectedHandles = false;
     
     // We have selected an object, increase outline of shape to
     // simulate focus, and turn selectionHandle on for the current shape.
@@ -676,8 +643,6 @@ function renderShapes() {
 
 /**
  * Surround current shape with selectionHandler Square Nodes
- * 
- * @param shape
  */
 Shape.prototype.selectionHandlerRender = function(shape) {
     // If currently there isn't any instantiate selection handles
