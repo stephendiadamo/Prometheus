@@ -66,36 +66,3 @@ function hidePallets(rect, circle, line){
     $("#straightLine").css("font-weight", "normal");
   }
 }
-
-$(document).ready(function() {
-
-   /* $("#rectangle").click(function() {
-      if (!rectanglePalletShowing){
-        hidePallets(false, true, true);
-      showPallets(true, false, false);
-          $("#rectangle").css("font-weight", "900");  
-        } else {
-      hidePallets(true, false, false);
-        }
-    });
-
-  $("#straightLine").click(function() {
-      if (!straightLinePalletShowing){
-        hidePallets(true, true, false);
-      showPallets(false, false, true);
-          $("#straightLine").css("font-weight", "900");
-        } else {
-          hidePallets(false, false, true);
-        }
-    });
-
-    $("#circle").click(function() {
-      if (!circlePalletShowing){
-        hidePallets(true, false, true);
-      showPallets(false, true, false);
-          $("#circle").css("font-weight", "900");
-     } else {
-      hidePallets(false, true, false);
-     }
-   });*/
-});
