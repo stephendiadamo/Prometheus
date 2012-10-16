@@ -138,6 +138,7 @@ Shape.prototype.setBaseCoordinates = function (x, y) {
 	this.baseY = y;
 }
 
+// Line Constructor
 function Line(pointStart, lineColor, lineThickness) {
 	// Initialize a line with no length first
     if (pointStart != null){
@@ -231,6 +232,7 @@ Line.prototype.hitTest = function (testX, testY) {
 	return false;
 };
 
+//Rectangle Constructor
 function Rectangle(pointStart, fillColor, lineColor, lineThickness) {
     if (pointStart != null){
     	Shape.call(this, pointStart[0], pointStart[1], fillColor, lineColor, lineThickness);
@@ -286,7 +288,7 @@ Rectangle.prototype.hitTest = function (currentX, currentY) {
 	return false;
 };
 
-
+// Circle Constructor
 function Circle(x, y, fillColor, lineColor, lineThickness, myRadius) {
 	Shape.call(this, x, y, fillColor, lineColor, lineThickness);
 	var radius = myRadius;
@@ -444,7 +446,8 @@ function commandCanvas(command) {
 		break;
 	}
 }
-
+// Copy shape function
+// Given a shape, duplicate it into a new shape and return the new shape
 function copyShape(shape){
     var newShape;
     if (shape instanceof Circle) {
@@ -465,7 +468,7 @@ function copyShape(shape){
     return newShape;
 }
 
-// Get the mouse coordinates with respect to the canvas
+// Return the mouse coordinates with respect to the canvas
 function updateMouseCoordinates(event) {
 	// Paranoid check
 	if (event == null && canvas == null || event.which != 1) return null;
@@ -627,6 +630,7 @@ function hitTest(coordinates) {
     }
 }
 
+// Redraw the canvas
 function renderShapes() {
 	// First we need reset the page
 	context.save();
@@ -751,6 +755,8 @@ Shape.prototype.selectionHandlerResize = function (mouseCoord) {
 	}
 }
 
+// Bring the given shape to the front of the canvas, that is
+// put the shape at the end of the array
 function bringToFront(shape){
 	removeShapeFromArray(shape);
 	shapes.push(shape);
