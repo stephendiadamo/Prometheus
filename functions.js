@@ -36,17 +36,21 @@ var mouseDown = false; // Used for mouseMove events
 
 var canvas;
 var context;
-
+var shifted = false;
 // Initialization 
 $(document).ready(function () {
 	// Set up variables necessary for drawing
 	canvas = document.getElementById("drawingCanvas");
 	context = canvas.getContext('2d');	
+		
+    $(document).bind('keydown', function(e){shifted = e.shiftKey;} );
+    $(document).bind('keyup', function(e){if(e.shiftKey){shifted = false;}});
 
 	$('#drawingCanvas').mousedown(function (e) {
 	    switch (e.which) {
 			case 1: // Left mouse button pressed
-				console.log('Left mouse button pressed');
+				addShape(e);
+				//console.log('Left mouse button pressed');
 				break;
 			case 2: // Middle mouse button clicked
 				if (currentSelectedShape != null){
@@ -56,15 +60,21 @@ $(document).ready(function () {
 				break;
 			case 3:// Right mouse button pressed
 				setSelectedTool(null);
-				console.log('Right mouse button pressed');
+				//console.log('Right mouse button pressed');
+				if (currentSelectedShape != null){
+					currentSelectedShape.setSelfixBoldingected(false);	
+					currentSelectedHandle = false;
+				}
+				renderShapes();
 				break;
 			default:
-				console.log('You have a strange mouse');
+				//console.log('You have a strange mouse');
 			}   
 		mouseDown = true;
-		addShape(e);
 	});
 
+	fixBolding();
+	
 	$('#drawingCanvas').mouseup(function (e) {
 		mouseDown = false;
 		finishShape(e);
@@ -154,12 +164,28 @@ Line.prototype.draw = function () {
 	context.setTransform(1, 0, 0, 1, 0, 0);
 	//context.moveTo(this.x, this.y);
 	context.beginPath();
+	
+	
+	if(shifted && this === currentsetDraw){
+		angle = Math.atan2(Math.abs(this.baseY-this.endY), Math.abs(this.baseX-this.endX));
+		angle = angle * (180.0 / Math.PI);
+		if ((angle >= 45 && angle < 135) || (angle >= 225 && angle < 315)){
+			//console.log("vertical");
+			this.endX = this.baseX;
+		} else {
+			//console.log("hortizontal");
+			this.endY = this.baseY;
+		}
+		
+	} 
+		
 	context.moveTo(this.baseX, this.baseY);
 	context.lineTo(this.endX, this.endY);
 	context.strokeStyle = this.lineColor;
 	context.lineWidth = this.lineThickness;
 	context.stroke();
 	context.closePath();
+	
 }
 
 Line.prototype.hitTest = function (testX, testY) {
@@ -176,15 +202,20 @@ Line.prototype.hitTest = function (testX, testY) {
     y2 = this.endY;
     
     // If completely vertical
-    if ((x2 - x1) == 0){
-        if (testY > y1 + lineThickness && testY < y2 + lineThickness && testX > x1 - lineThickness && testX < x1 + lineThickness){
+    // var temp = x2 - x1
+    console.log("Mx is " + Math.abs(x2 - x1));
+    if (Math.abs(x2 - x1) <= 5){
+        if (((testY > y1  && testY < y2 ) || (testY > y2 && testY < y1))
+             && testX > x1  && testX < x1 ){
             return true;
         }
         return false;
     }
+    console.log("My is " + Math.abs(y2 - y1));
     // If completely horizontal
-    if (y2 - y1 == 0){
-        if (testX > x1 + lineThickness && testX < x2 + lineThickness && testY > y1 - lineThickness && testY < y1 + lineThickness){
+    if (Math.abs(y2 - y1) <= 5){
+        if (((testX > x1 && testX < x2) || (testX < x1 && testX > x2 ))
+             && testY > y1 && testY < y1){
             return true;
         }
         return false;
@@ -219,14 +250,17 @@ Line.prototype.hitTest = function (testX, testY) {
      * 
      */
     var hitTest = false;
+    console.log("M is " + m);
     for (currentY = testY - errorRate ; currentY < testY + errorRate ; currentY ++){
         currentX = (currentY-b)/m;
-        
+     
         if (testX > (currentX - lineThickness) && testX < (currentX + lineThickness) &&
                 ((testX > (x1  - lineThickness) && testX < (x2 + lineThickness) ) || 
                  (testX > (x2 - lineThickness) && testX < ( x1 + lineThickness) ) )
                  ){
-            return true;
+					    if ((testY > y1 - lineThickness && testY < y2 + lineThickness) || (testY > y2 - lineThickness && testY < y1 + lineThickness))
+{
+            return true;}
         }
     }
 	return false;
@@ -391,17 +425,21 @@ function setSelectedTool(shapeID) {
 	       currentSelectedHandle = false;
 	       currentSelectedTool = shapeID;
         // Expand pallets used to modify current selected shape
-        var toShow = [ (shapeID == RECTANGLE),
-                (shapeID == CIRCLE), (shapeID == LINE) ];
-        
-        showPallets(toShow[0], toShow[1], toShow[2]);
-        if (fillColorSelected){
-        	$("#fillColorSelector").css("font-weight", "900");
-        } else if (lineColorSelected) {
-        	$("#lineColorSelector").css("font-weight", "900");
-        }
+        var toShow = [ (shapeID == RECTANGLE), (shapeID == CIRCLE), (shapeID == LINE) ];
+        showPallets(toShow[0], toShow[1], toShow[2], fillColorSelected);
+		
 	}
-	renderShapes();
+	//renderShapes();
+}
+
+function fixBolding(){
+	if (fillColorSelected){
+      	$(".fillColorSelector").css("font-weight", "900");
+      	$(".lineColorSelector").css("font-weight", "normal");
+    } else if (lineColorSelected) {
+        $(".lineColorSelector").css("font-weight", "900");
+        $(".fillColorSelector").css("font-weight", "normal");
+    }
 }
 
 /*
@@ -607,7 +645,7 @@ function hitTest(coordinates) {
             var toShow = [ (shape instanceof Rectangle),
                     (shape instanceof Circle), (shape instanceof Line) ];
             
-            showPallets(toShow[0], toShow[1], toShow[2]);
+            showPallets(toShow[0], toShow[1], toShow[2], fillColorSelected);
             
             // We have already selected the highest shape therefore
             // do not hit test on shapes beneath this
@@ -672,8 +710,8 @@ Shape.prototype.selectionHandlerRender = function(shape) {
             for ( var w = 0; w < 3; w++) {
                 // Not drawing middle selection handle
                 if (!(w == 1 && h == 1)) {
-                    var block_x = shape.baseX + (w * x_length / (2 * radHacks))- rad;
-                    var block_y = shape.baseY + (h * y_length / (2 * radHacks))- rad;
+                    var block_x = shape.baseX + (w * x_length / (2 * radHacks))- rad -5;
+                    var block_y = shape.baseY + (h * y_length / (2 * radHacks))- rad -5;
                     
                     /*
                      * mainSelectionHandles[iHandle].setBaseCoordinates(shape.x
@@ -807,17 +845,13 @@ function setLineThickeness(thickness) {
     }
 }
 
-function setColorSelector(type) {
-	if (type == FILLCOLOR) {
+function setColorSelector(typeColor) {
+	if (typeColor == FILLCOLOR) {
 		fillColorSelected = true;
 		lineColorSelected = false;
-		$("#lineColorSelector").css("font-weight", "normal");
-		$("#fillColorSelector").css("font-weight", "900");
-
-	} else if (type == LINECOLOR) {
+	} else if (typeColor == LINECOLOR) {
 		fillColorSelected = false;
 		lineColorSelected = true;
-		$("#fillColorSelector").css("font-weight", "normal");
-		$("#lineColorSelector").css("font-weight", "900");		
 	}
+	fixBolding();
 }

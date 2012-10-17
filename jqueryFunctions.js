@@ -3,7 +3,8 @@ var straightLinePalletShowing = false;
 var circlePalletShowing = false;
 var didFinish = [true, true, true];
 
-function showPallets(rect, circle, line){
+
+function showPallets(rect, circle, line, fillSelected){
   if (rect) {
     if (didFinish[0]) {
       hidePallets(false, true, true);
@@ -27,12 +28,20 @@ function showPallets(rect, circle, line){
   if (line) {
     if (didFinish[2]){
       hidePallets(true, true, false);
-      $("#straightLinePallet").html($("#drawingOptions").html());
       $("#straightLinePallet").slideDown(300);
+      $("#straightLinePallet").html($("#drawingOptions").html());
       straightLinePalletShowing = true;
-      didFinish[2] = false;
+      didFinish[2] = false;		
     }
-  }   
+  }
+   
+	if (fillSelected){
+      	$(".fillColorSelector").css("font-weight", "900");
+      	$(".lineColorSelector").css("font-weight", "normal");
+    } else {
+        $(".lineColorSelector").css("font-weight", "900");
+        $(".fillColorSelector").css("font-weight", "normal");
+    } 
 }
 
 function hidePallets(rect, circle, line){
@@ -43,7 +52,6 @@ function hidePallets(rect, circle, line){
       didFinish[0] = true;
     });
     rectanglePalletShowing = false;
-    $("#rectangle").css("font-weight", "normal");
   }
 
   if (circle){
@@ -53,7 +61,6 @@ function hidePallets(rect, circle, line){
       didFinish[1] = true;
     });
     circlePalletShowing = false;
-    $("#circle").css("font-weight", "normal");
   }
 
   if (line){
@@ -63,6 +70,7 @@ function hidePallets(rect, circle, line){
       didFinish[2] = true;
     });
     straightLinePalletShowing = false;
-    $("#straightLine").css("font-weight", "normal");
   }
 }
+
+

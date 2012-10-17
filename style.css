@@ -1,5 +1,5 @@
 body {
-	width: 1300px;
+	width: 1270px;
 	background: #e6d7b8;
 }
 
@@ -31,7 +31,7 @@ button {
 	margin: 5 auto;
 }
 
-.optionButton {
+.optionButton{
 	-moz-box-shadow:inset 0px 1px 0px 0px #dcecfb;
 	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
@@ -61,13 +61,13 @@ button {
 }
 
 #leftMenu{
-	width: 250px;
+	width: 230px;
 	float:left;
 }
 
 #options{
 	position:relative;
-	top:1px;;
+	top:1px;
 }
 
 #wrapper {
@@ -92,7 +92,7 @@ canvas {
 }
 
 #leftPallet {
-	width: 45%;
+	width: 60px;
 	float: left;
 	left: 0;
 	top: 0;	
@@ -101,6 +101,7 @@ canvas {
 #rightPallet button{
 	width: 100px;
 	height: 40px;
+	margin-left: 15px;
 }
 
 #rightPallet {
@@ -112,8 +113,6 @@ canvas {
 }
 #drawingOptions{
 	display: none;
-	width: 20px;
-	border-style: solid;
 }
 
 #colorPallet {
@@ -128,17 +127,20 @@ canvas {
 }
 
 #bottomPallet button{
-	width: 95px;
+	width: 105px;
 	float: left;
-	margin: 7px;
-	font-weight: normal;
-	font-size: 13px;
+	margin: 7px, 0px, 7px, 0px;
+	font-size: 14px;
 }
 
 #straightLinePallet, #rectanglePallet, #circlePallet {
 	display: none;
 	height: 320px;
-	width: 250px;
+	width: 100%;
 	margin: 0 auto;
-	margin-left: 10px;
+	margin-left: 0px;
+}
+
+.lineColorSelector {
+	margin-left: 20px;
 }

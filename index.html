@@ -3,7 +3,6 @@
 <head>
 	<title>CSC309 Assignment One - HTML5 Paint</title>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css" />
-	<script src="http://code.jquery.com/ui/1.9.0/jquery-ui.js"></script>
 	<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
 	<style type="text/css"></style>
 	<script type="text/javascript" src="jqueryFunctions.js"></script>
@@ -112,26 +111,16 @@
 					</table>
 				</div>
 				<div id="rightPallet">
-					<div>
-						<button  class="optionButton" onclick="setLineThickeness(1)"> <hr noshade color="#000" size=1/ </button>
-					</div>
-					<div>
+						<button class="optionButton" onclick="setLineThickeness(1)"> <hr noshade color="#000" size=1/ </button>
 						<button class="optionButton" onclick="setLineThickeness(2)"> <hr noshade color="#000" size=2/> </button>
-					</div>
-					<div>
 						<button class="optionButton" onclick="setLineThickeness(4)"> <hr noshade color="#000" size=4/> </button>
-					</div>
-					<div>
 						<button class="optionButton" onclick="setLineThickeness(6)"> <hr noshade color="#000" size=6/> </button>
-					</div>
-					<div>
 						<button class="optionButton" onclick="setLineThickeness(8)"> <hr noshade color="#000" size=8/>  </button>
-					</div>
 				</div>
 
 				<div id="bottomPallet">
-					<button class="optionButton" id="fillColorSelector" onclick="setColorSelector('fillColor')">Fill color</button>
-					<button class="optionButton" id="lineColorSelector" onclick="setColorSelector('lineColor')">Line color</button>
+					<button class="optionButton fillColorSelector" onclick="setColorSelector('fillColor')">Fill color</button>
+					<button class="optionButton lineColorSelector" onclick="setColorSelector('lineColor')">Line color</button>
 				</div>
 			</div>
 
